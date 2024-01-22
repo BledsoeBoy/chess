@@ -8,9 +8,28 @@ package chess;
  */
 public class ChessBoard {
     private final ChessPiece[][] squares = new ChessPiece[8][8];
+
+    private static final int BOARD_SIZE = 8;
     public ChessBoard() {
-        
+
     }
+
+    public boolean isEmpty(ChessPosition position) {
+        return getPiece(position) == null;
+    }
+
+    public boolean isOpponent(ChessPosition position, ChessPiece oldPiece) {
+        ChessPiece piece = getPiece(position);
+
+        return piece != null && piece.getTeamColor() != oldPiece.getTeamColor();
+    }
+
+    public boolean isOwn(ChessPosition position, ChessPiece oldPiece) {
+        ChessPiece piece = getPiece(position);
+
+        return piece != null && piece.getTeamColor() == oldPiece.getTeamColor();
+    }
+
 
     /**
      * Adds a chess piece to the chessboard
@@ -19,7 +38,7 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece) {
-        squares [position.getRow()][position.getColumn()] = piece;
+        squares [position.getRow() - 1][position.getColumn() - 1] = piece;
     }
 
     /**
@@ -30,9 +49,15 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()][position.getColumn()];
+        return squares[position.getRow() - 1][position.getColumn() - 1];
     }
 
+
+    // Other methods and properties...
+
+    public boolean isInBoard(int row, int col) {
+        return row >= 1 && row <= BOARD_SIZE && col >= 1 && col <= BOARD_SIZE;
+    }
     /**
      * Sets the board to the default starting board
      * (How the game of chess normally starts)
