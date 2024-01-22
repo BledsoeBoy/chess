@@ -14,10 +14,6 @@ public class KingMovesCalculator {
         // Loop through all possible directions (horizontally, vertically, and diagonally)
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
-                // Skip the case where both i and j are 0 (current position)
-                if (i == 0 && j == 0) {
-                    continue;
-                }
 
                 int newRow = row + i;
                 int newCol = col + j;
