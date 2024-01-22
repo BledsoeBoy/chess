@@ -1,5 +1,7 @@
 package chess;
 
+import java.util.Arrays;
+
 /**
  * A chessboard that can hold and rearrange chess pieces.
  * <p>
@@ -71,7 +73,34 @@ public class ChessBoard {
         placeInitialPieces();
     }
 
-    private void placeInitialPieces() {
+    @Override
+    public String toString() {
+        StringBuilder result = new StringBuilder();
+
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                ChessPiece piece = squares[row][col];
+                result.append(piece != null ? piece.toString() : "  ").append(" | ");
+            }
+            result.append("\n---------------------------------\n");
+        }
+
+        return result.toString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessBoard that)) return false;
+        return Arrays.equals(squares, that.squares);
+    }
+
+    @Override
+    public int hashCode() {
+        return Arrays.hashCode(squares);
+    }
+
+    public void placeInitialPieces() {
         for (int col = 0; col < BOARD_SIZE; col++) {
             squares[1][col] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.PAWN);
             squares[6][col] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.PAWN);
@@ -100,7 +129,7 @@ public class ChessBoard {
         squares[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
 
         //place kings
-        squares[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        squares[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
+        squares[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
+        squares[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
     }
 }

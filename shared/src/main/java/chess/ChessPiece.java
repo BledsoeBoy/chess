@@ -34,6 +34,26 @@ public class ChessPiece {
         PAWN
     }
 
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ChessPiece that)) return false;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
     /**
      * @return Which team this chess piece belongs to
      */
@@ -47,23 +67,6 @@ public class ChessPiece {
     public PieceType getPieceType() {
 
         return type;
-    }
-
-    @Override
-    public String toString() {
-        return "ChessPiece{}";
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ChessPiece that)) return false;
-        return pieceColor == that.pieceColor && type == that.type;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(pieceColor, type);
     }
 
     /**
