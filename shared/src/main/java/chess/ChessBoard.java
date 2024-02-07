@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class ChessBoard {
     private final ChessPiece[][] squares = new ChessPiece[8][8];
 
-    private static final int BOARD_SIZE = 8;
+    public static final int BOARD_SIZE = 8;
     public ChessBoard() {
 
     }
