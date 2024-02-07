@@ -52,7 +52,7 @@ public class PawnMovesCalculator {
     }
 
     private static void addPawnMoveInitialInDirection(ChessBoard board, ChessPosition position, int row, int col, int direction, Collection<ChessMove> moves) {
-        int newRow = row + (1 * direction);
+        int newRow = row + (direction);
 
         if (board.isInBoard(newRow, col)) {
             ChessPosition newPosition = new ChessPosition(newRow, col);
@@ -64,7 +64,7 @@ public class PawnMovesCalculator {
         newRow = row + (2 * direction);
 
         if (board.isInBoard(newRow, col)) {
-            ChessPosition onePosition = new ChessPosition(row + 1 * direction, col);
+            ChessPosition onePosition = new ChessPosition(row + direction, col);
             ChessPosition newPosition = new ChessPosition(newRow, col);
             if (board.isEmpty(newPosition) && board.isEmpty(onePosition)) {
                 moves.add(new ChessMove(position, newPosition, null));
