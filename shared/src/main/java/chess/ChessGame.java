@@ -158,13 +158,10 @@ public class ChessGame {
                 if (piece != null && piece.getTeamColor() != teamColor) {
                     Collection<ChessMove> movesToCheck = piece.pieceMoves(board, currentPosition);
                     for (ChessMove move : movesToCheck) {
-                        if (move.getEndPosition().equals(kingPosition)) {
+                        if (move.getEndPosition().equals(kingPosition)) { //use .equals() here because comparing objects
                             return true;
                         }
                     }
-//                    if (movesToCheck != null && movesToCheck.contains(new ChessMove(currentPosition, kingPosition, null))) {
-//                        return true;
-//                    }
                 }
             }
         }
@@ -208,6 +205,7 @@ public class ChessGame {
                         ChessGame cloneGame = clone(); // Create a clone of the game
                         cloneGame.validMoves(move.getStartPosition()); // Make the move in the cloned game
 
+                        //checks to see if there are any valid moves
                         if (!cloneGame.validMoves(move.getStartPosition()).isEmpty()) {
                             return false;
                         }
