@@ -74,8 +74,10 @@ public class ChessGame {
             throw new InvalidMoveException("Invalid move: No piece at the starting position or not your turn");
         }
 
-        if (move != validMoves(start)) {
-            throw new InvalidMoveException("Invalid move: This move puts your king in check");
+        Collection<ChessMove> validMoves = validMoves(start);
+
+        if (validMoves == null || !validMoves.contains(move)) {
+            throw new InvalidMoveException("Invalid move: This move isn't valid");
         }
 
         // Make the move
@@ -83,10 +85,6 @@ public class ChessGame {
         board.addPiece(start, null);
 
         // Check for pawn promotion
-        if (piece.getPieceType() == ChessPiece.PieceType.PAWN && end.getRow() == 1 && turn == TeamColor.WHITE ||
-                end.getRow() == 8 && turn == TeamColor.BLACK) {
-            board.addPiece(end, new ChessPiece(turn, move.getPromotionPiece()));
-        }
 
         // Switch turn
         turn = (turn == TeamColor.WHITE) ? TeamColor.BLACK : TeamColor.WHITE;
@@ -138,7 +136,46 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        if (!isInCheck(teamColor)) {
+            return false;
+        }
+
+        for (int r = 1; r <= ChessBoard.BOARD_SIZE; r++) {
+            for (int c = 1; c <= ChessBoard.BOARD_SIZE; c++) {
+                ChessPosition currentPosition = new ChessPosition(r, c);
+                ChessPiece piece = board.getPiece(currentPosition);
+
+                if (piece != null && piece.getTeamColor() == teamColor) {
+                    Collection<ChessMove> moves = piece.pieceMoves(board, currentPosition);
+
+                    for (ChessMove move : moves) {
+                        // Try each move and see if it gets the team out of check
+                        try {
+                            ChessGame cloneGame = clone(); // Create a clone of the game
+                            cloneGame.makeMove(move); // Make the move in the cloned game
+
+                            // If the team is not in check after making this move, return false (not in checkmate)
+                            if (!cloneGame.isInCheck(teamColor)) {
+                                return false;
+                            }
+                        } catch (InvalidMoveException e) {
+                            // Invalid move, try the next move
+                        }
+                    }
+                }
+            }
+        }
+
+        // If no legal move gets the team out of check, it's in checkmate
+        return true;
+    }
+
+    protected ChessGame clone() {
+        // Create a new instance of ChessGame with the same board and turn
+        ChessGame clonedGame = new ChessGame();
+        clonedGame.board = this.board; // Assuming ChessBoard is immutable or properly handled
+        clonedGame.turn = this.turn;
+        return clonedGame;
     }
 
     /**
