@@ -258,7 +258,7 @@ public class ChessGame {
                         Collection<ChessMove> moves = piece.pieceMoves(board, currentPosition);
                         for (ChessMove move : moves) {
                                 ChessGame cloneGame = clone(); // Create a clone of the game
-                                cloneGame.validMoves(move.getStartPosition()); // Make the move in the cloned game
+                                cloneGame.validMoves(move.getStartPosition()); // doesn't need to actually make the move, by not using makeMove you don't care about teamColor
 
                                 if (!cloneGame.validMoves(move.getStartPosition()).isEmpty()) {
                                     return false;
