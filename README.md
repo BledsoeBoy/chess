@@ -38,3 +38,6 @@ java -jar client/target/client-jar-with-dependencies.jar
 
 ♕ 240 Chess Client: chess.ChessPiece@7852e922
 ```
+
+
+![image](https://github.com/BledsoeBoy/chess/assets/144291641/1aeeb446-ef54-46c1-872f-5d3b500eda11)
