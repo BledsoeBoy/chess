@@ -1,8 +1,5 @@
 package server;
-
-import com.google.gson.Gson;
-import dataAccess.DataAccessException;
-import model.User;
+import handlers.Handlers;
 import spark.*;
 
 public class Server {
@@ -14,13 +11,15 @@ public class Server {
 
         // Register your endpoints and handle exceptions here.
 //        Spark.delete("/db", this::clearApp);
-//        Spark.post("/user", this::register);
-        Spark.post("/session", this::login);
+        var handlers = new Handlers();
+        Spark.post("/user",  (req, res) -> handlers.register(req, res));
+//        Spark.post("/session", login);
 //        Spark.delete("/session", this::logout);
 //        Spark.get("/game", this::listGames);
 //        Spark.post("/game", this::createGame);
 //        Spark.put("/game", this::joinGame);
 
+        Spark.init();
         Spark.awaitInitialization();
         return Spark.port();
     }
