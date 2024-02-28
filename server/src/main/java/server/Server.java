@@ -8,15 +8,14 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-
-        // Register your endpoints and handle exceptions here.
-//        Spark.delete("/db", this::clearApp);
         var handlers = new Handlers();
-        Spark.post("/user",  (req, res) -> handlers.register(req, res));
-//        Spark.post("/session", login);
-//        Spark.delete("/session", this::logout);
+        // Register your endpoints and handle exceptions here.
+        Spark.delete("/db", handlers::clearApp);
+        Spark.post("/user", handlers::register);
+        Spark.post("/session", handlers::login);
+        Spark.delete("/session", handlers::logout);
 //        Spark.get("/game", this::listGames);
-//        Spark.post("/game", this::createGame);
+        Spark.post("/game", handlers::createGame);
 //        Spark.put("/game", this::joinGame);
 
         Spark.init();

@@ -1,17 +1,43 @@
 package service;
 
 import dataAccess.*;
-import handlers.RegisterRequest;
+import handlers.requests.RegisterRequest;
 import model.Auth;
 import model.User;
 
 public class UserService {
     public Auth register(RegisterRequest req) throws DataAccessException {
         var userDAO = new MemoryUserDAO();
-        userDAO.createUser(req);
-        var authDAO = new MemoryAuthDAO();
-        return authDAO.createAuth(req);
+        var user = userDAO.getUser(req.username());
+        if (user == null) {
+            userDAO.createUser(req);
+            var authDAO = new MemoryAuthDAO();
+            return authDAO.createAuth(req.username());
+        }
+        else {
+            return null;
+        }
     }
-    //public Auth login(User user) {}
-    public void logout(User user) {}
+
+    public Auth login(String username, String password) throws DataAccessException {
+        var userDAO = new MemoryUserDAO();
+        var user = userDAO.getUser(username);
+        if (user != null && !user.password().equals(password)) {
+            return null;
+        }
+
+        var authDAO = new MemoryAuthDAO();
+        return authDAO.createAuth(username);
+    }
+
+    public boolean logout(String authToken) throws DataAccessException {
+        var authDAO = new MemoryAuthDAO();
+        Auth auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            return false;
+        } else {
+            authDAO.deleteAuth(authToken);
+            return true;
+        }
+    }
 }
