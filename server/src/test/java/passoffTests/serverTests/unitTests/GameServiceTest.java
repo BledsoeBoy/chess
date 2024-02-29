@@ -56,21 +56,27 @@ public class GameServiceTest {
 
         Auth auth = myObject.register(parameter1);
 
-        var gameService = new GameService();
-        String gameName = "someName";
+        // Check if auth is not null before proceeding
+        if (auth != null) {
+            var gameService = new GameService();
+            String gameName = "someName";
 
-        Integer gameId = gameService.createGame(gameName);
+            Integer gameId = gameService.createGame(gameName);
 
-        var gameDAO = new MemoryGameDAO();
-        gameDAO.getGame(gameId);
+            var gameDAO = new MemoryGameDAO();
+            gameDAO.getGame(gameId);
 
-        String playerColor = "WHITE";
+            String playerColor = "WHITE";
 
-        int actual = gameService.joinGame(auth.authToken(), playerColor, gameId);
+            int actual = gameService.joinGame(auth.authToken(), playerColor, gameId);
 
-        int expected = -5;
+            int expected = -5;
 
-        Assertions.assertEquals(expected, actual);
+            Assertions.assertEquals(expected, actual);
+        } else {
+            // Handle the case where auth is null (e.g., log an error or fail the test)
+            Assertions.fail("User registration failed. Auth is null.");
+        }
     }
 
     @Test
@@ -102,9 +108,9 @@ public class GameServiceTest {
 
         String playerColor = "WHITE";
 
-        int value = gameService.joinGame(auth.authToken(), playerColor, gameId);
-        int actual = gameService.joinGame(auth2.authToken(), playerColor, gameId);
+        int value = (auth != null) ? gameService.joinGame(auth.authToken(), playerColor, gameId) : 0;
 
+        int actual = (auth2 != null) ? gameService.joinGame(auth2.authToken(), playerColor, gameId) : 0;
         int expected = -2;
 
         Assertions.assertEquals(expected, actual);
@@ -121,25 +127,29 @@ public class GameServiceTest {
         RegisterRequest parameter1 = new RegisterRequest(username, password, email);
         Auth auth = userService.register(parameter1);
 
-        var myObject = new GameService();
-        String gameName = "firstGame";
+        // Check if auth and authToken are not null before proceeding
+        if (auth != null && auth.authToken() != null) {
+            var myObject = new GameService();
+            String gameName = "firstGame";
+            myObject.createGame(gameName);
 
-        myObject.createGame(gameName);
+            String gameName2 = "secondGame";
+            myObject.createGame(gameName2);
 
-        String gameName2 = "secondGame";
+            var authToken = auth.authToken();
 
-        myObject.createGame(gameName2);
+            var actual = myObject.listGames(authToken);
 
-        var authToken = auth.authToken();
+            List<Game> expected = Arrays.asList(
+                    new Game(1, null, null, "firstGame", null),
+                    new Game(2, null, null, "secondGame", null)
+            );
 
-        var actual = myObject.listGames(authToken);
-
-        List<Game> expected = Arrays.asList(
-                new Game(1, null, null, "firstGame", null),
-                new Game(2, null, null, "secondGame", null)
-        );
-
-        Assertions.assertEquals(expected.size(), actual.size());
+            Assertions.assertEquals(expected.size(), actual.size());
+        } else {
+            // Handle the case where auth or authToken is null (e.g., log an error or fail the test)
+            Assertions.fail("User registration failed. Auth or AuthToken is null.");
+        }
     }
     @Test
     void negativelistGames() throws DataAccessException {
