@@ -4,10 +4,11 @@ import handlers.requests.RegisterRequest;
 import model.Auth;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class MemoryAuthDAO implements AuthDAO {
-        private static final HashMap<String, Auth> auths = new HashMap<>();
+        private static final Map<String, Auth> auths = new HashMap<>();
         public void clearAuths() {
             auths.clear();
         }

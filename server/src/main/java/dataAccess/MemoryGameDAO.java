@@ -24,7 +24,6 @@ public class MemoryGameDAO implements GameDAO {
                 }
                 var gameData = new Game(nextId, null, null, gameName, game);
 
-
                 games.put(gameData.gameID(), gameData);
 
                 return gameData.gameID();
@@ -32,13 +31,15 @@ public class MemoryGameDAO implements GameDAO {
         public void updateGame(String playerColor, Game game, String username) {
                 var id = game.gameID();
                 var gameName = game.gameName();
+                var blackUsername = game.blackUsername();
+                var whiteUsername = game.whiteUsername();
                 var chessGame = game.game();
 
                 if (playerColor.equals("WHITE")) {
-                        Game newGameData = new Game(id, username, null, gameName, chessGame);
+                        Game newGameData = new Game(id, username, blackUsername, gameName, chessGame);
                         games.replace(id, newGameData);
                 } else if (playerColor.equals("BLACK")) {
-                        Game newGameData = new Game(id, null, username, gameName, chessGame);
+                        Game newGameData = new Game(id, whiteUsername, username, gameName, chessGame);
                         games.replace(id, newGameData);
                 }
         }

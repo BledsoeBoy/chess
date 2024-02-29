@@ -28,10 +28,10 @@ public class GameService {
 
         if (playerColor == null) {
             return -5; // No color specified
-        } else if ("BLACK".equals(playerColor) && (game.blackUsername() == null || Objects.equals(auth.username(), game.blackUsername()))) {
+        } else if ("BLACK".equals(playerColor) && (game.blackUsername() == null)) {
             gameDAO.updateGame(playerColor, game, auth.username());
             return -5; // Success, player joined as black
-        } else if ("WHITE".equals(playerColor) && (game.whiteUsername() == null || Objects.equals(auth.username(), game.whiteUsername()))) {
+        } else if ("WHITE".equals(playerColor) && (game.whiteUsername() == null)) {
             gameDAO.updateGame(playerColor, game, auth.username());
             return -5; // Success, player joined as white
         } else {

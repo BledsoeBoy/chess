@@ -4,14 +4,11 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryGameDAO;
 import handlers.requests.RegisterRequest;
 import model.Auth;
-import model.Game;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import service.GameService;
 import service.UserService;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class GameServiceTest {
     @Test
