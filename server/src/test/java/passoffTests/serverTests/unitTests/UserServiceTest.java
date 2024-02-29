@@ -1,7 +1,6 @@
 package passoffTests.serverTests.unitTests;
 
 import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
 import handlers.requests.RegisterRequest;
 import model.Auth;
 import org.junit.jupiter.api.Assertions;
@@ -34,7 +33,7 @@ public class UserServiceTest {
 
         // Create a user with a specific username
         RegisterRequest existingUserRequest = new RegisterRequest("existingUser", "password123", "existing@example.com");
-        Auth existingUserAuth = userService.register(existingUserRequest);
+        userService.register(existingUserRequest);
 
         // Try to register the same user again
         RegisterRequest duplicateUserRequest = new RegisterRequest("existingUser", "newPassword", "new@example.com");

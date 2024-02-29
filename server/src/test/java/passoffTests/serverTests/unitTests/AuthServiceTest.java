@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import service.AuthService;
 import service.UserService;
 
-public class AuthServiceTests {
+public class AuthServiceTest {
     @Test
     void clearApp() throws DataAccessException {
         var userService = new UserService();

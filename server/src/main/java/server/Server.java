@@ -8,15 +8,15 @@ public class Server {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
-        var handlers = new Handlers();
+        // No need to create an instance of Handlers since the methods are static
         // Register your endpoints and handle exceptions here.
-        Spark.delete("/db", handlers::clearApp);
-        Spark.post("/user", handlers::register);
-        Spark.post("/session", handlers::login);
-        Spark.delete("/session", handlers::logout);
-//        Spark.get("/game", this::listGames);
-        Spark.post("/game", handlers::createGame);
-//        Spark.put("/game", this::joinGame);
+        Spark.delete("/db", Handlers::clearApp);
+        Spark.post("/user", Handlers::register);
+        Spark.post("/session", Handlers::login);
+        Spark.delete("/session", Handlers::logout);
+        Spark.get("/game", Handlers::listGames);
+        Spark.post("/game", Handlers::createGame);
+        Spark.put("/game", Handlers::joinGame);
 
         Spark.init();
         Spark.awaitInitialization();

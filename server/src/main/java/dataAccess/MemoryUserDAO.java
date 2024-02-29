@@ -4,9 +4,10 @@ import handlers.requests.RegisterRequest;
 import model.User;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class MemoryUserDAO implements UserDAO {
-    private static final HashMap<String, User> users = new HashMap<>();
+    private static final Map<String, User> users = new HashMap<>();
     public void clearUsers() {
         users.clear();
     }

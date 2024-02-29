@@ -3,7 +3,6 @@ package service;
 import dataAccess.*;
 import handlers.requests.RegisterRequest;
 import model.Auth;
-import model.User;
 
 public class UserService {
     public Auth register(RegisterRequest req) throws DataAccessException {
@@ -22,12 +21,12 @@ public class UserService {
     public Auth login(String username, String password) throws DataAccessException {
         var userDAO = new MemoryUserDAO();
         var user = userDAO.getUser(username);
-        if (user != null && !user.password().equals(password)) {
+        if (user != null && user.password().equals(password)) {
+            var authDAO = new MemoryAuthDAO();
+            return authDAO.createAuth(username);
+        } else {
             return null;
         }
-
-        var authDAO = new MemoryAuthDAO();
-        return authDAO.createAuth(username);
     }
 
     public boolean logout(String authToken) throws DataAccessException {
