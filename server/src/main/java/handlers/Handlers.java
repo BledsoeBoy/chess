@@ -130,7 +130,6 @@ public class Handlers {
             return new Gson().toJson(response);
         }
 
-
         JoinGameRequest request = new Gson().fromJson(req.body(), JoinGameRequest.class);
 
         Integer gameID = request.getGameId();
@@ -140,7 +139,7 @@ public class Handlers {
         Game game = gameDAO.getGame(gameID);
 
         if (gameID == null || game == null) {
-            res.status(400); // Unauthorized
+            res.status(400);
             var response = new Responses("Error: bad request");
             return new Gson().toJson(response);
         }
@@ -150,7 +149,7 @@ public class Handlers {
 
 
         if (errorCode == -2) {
-            res.status(403); // Unauthorized
+            res.status(403);
             var response = new Responses("Error: already taken");
             return new Gson().toJson(response);
         }

@@ -83,37 +83,31 @@ public class GameServiceTest {
     void negativeJoinGame() throws DataAccessException {
         var myObject = new UserService();
 
+        // Register a user
         String username = "sam";
         String password = "bobby";
-        String email = "ruffy@gmail.com";
+        String email = "sam@gmail.com";
+        RegisterRequest registrationRequest = new RegisterRequest(username, password, email);
+        Auth auth = myObject.register(registrationRequest);
 
-        RegisterRequest parameter1 = new RegisterRequest(username, password, email);
+        // Check if auth is not null before proceeding
+        if (auth != null) {
+            // Create a game
+            var gameService = new GameService();
+            String gameName = "someGame";
+            Integer gameId = gameService.createGame(gameName);
 
-        String username2 = "flake";
-        String password2 = "weirdpassword";
-        String email2 = "noemail@gmail.com";
+            // Attempt to join the game with invalid parameters
+            String invalidColor = "INVALID_COLOR";
+            int actual = gameService.joinGame(auth.authToken(), invalidColor, gameId);
 
-        RegisterRequest parameter2 = new RegisterRequest(username2, password2, email2);
-
-        Auth auth = myObject.register(parameter1);
-        Auth auth2 = myObject.register(parameter2);
-
-        var gameService = new GameService();
-        String gameName = "someName";
-
-        Integer gameId = gameService.createGame(gameName);
-
-        var gameDAO = new MemoryGameDAO();
-        gameDAO.getGame(gameId);
-
-        String playerColor = "WHITE";
-
-        int value = (auth != null) ? gameService.joinGame(auth.authToken(), playerColor, gameId) : 0;
-
-        int actual = (auth2 != null) ? gameService.joinGame(auth2.authToken(), playerColor, gameId) : 0;
-        int expected = -2;
-
-        Assertions.assertEquals(expected, actual);
+            // Ensure the join operation returns the expected error code
+            int expectedErrorCode = -2;
+            Assertions.assertEquals(expectedErrorCode, actual);
+        } else {
+            // Enhance the failure message with details about the registration request
+            Assertions.fail("User registration failed. Auth is null. Registration request: " + registrationRequest);
+        }
     }
 
     @Test
@@ -127,29 +121,25 @@ public class GameServiceTest {
         RegisterRequest parameter1 = new RegisterRequest(username, password, email);
         Auth auth = userService.register(parameter1);
 
-        // Check if auth and authToken are not null before proceeding
-        if (auth != null && auth.authToken() != null) {
-            var myObject = new GameService();
-            String gameName = "firstGame";
-            myObject.createGame(gameName);
+        var myObject = new GameService();
+        String gameName = "firstGame";
 
-            String gameName2 = "secondGame";
-            myObject.createGame(gameName2);
+        myObject.createGame(gameName);
 
-            var authToken = auth.authToken();
+        String gameName2 = "secondGame";
 
-            var actual = myObject.listGames(authToken);
+        myObject.createGame(gameName2);
 
-            List<Game> expected = Arrays.asList(
-                    new Game(1, null, null, "firstGame", null),
-                    new Game(2, null, null, "secondGame", null)
-            );
+        var authToken = auth.authToken();
 
-            Assertions.assertEquals(expected.size(), actual.size());
-        } else {
-            // Handle the case where auth or authToken is null (e.g., log an error or fail the test)
-            Assertions.fail("User registration failed. Auth or AuthToken is null.");
-        }
+        var actual = myObject.listGames(authToken);
+
+        List<Game> expected = Arrays.asList(
+                new Game(1, null, null, "firstGame", null),
+                new Game(2, null, null, "secondGame", null)
+        );
+
+        Assertions.assertEquals(expected.size(), actual.size());
     }
     @Test
     void negativelistGames() throws DataAccessException {
