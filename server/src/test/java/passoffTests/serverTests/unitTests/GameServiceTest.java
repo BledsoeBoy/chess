@@ -1,6 +1,5 @@
 package passoffTests.serverTests.unitTests;
 
-import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryGameDAO;
 import handlers.requests.RegisterRequest;
@@ -12,7 +11,6 @@ import service.GameService;
 import service.UserService;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 
 public class GameServiceTest {

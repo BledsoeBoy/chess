@@ -23,7 +23,8 @@ public class AuthServiceTest {
         RegisterRequest parameter1 = new RegisterRequest(username, password, email);
 
         Auth auth = userService.register(parameter1);
-        String token = auth.authToken();
+        // Check if auth is not null before accessing its properties
+        String token = (auth != null) ? auth.authToken() : null;
 
         var userDAO = new MemoryUserDAO();
         var authDAO = new MemoryAuthDAO();
