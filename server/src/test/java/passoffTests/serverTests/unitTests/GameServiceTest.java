@@ -4,11 +4,14 @@ import dataAccess.DataAccessException;
 import dataAccess.MemoryGameDAO;
 import handlers.requests.RegisterRequest;
 import model.Auth;
+import model.Game;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import service.GameService;
 import service.UserService;
 
+import java.util.Arrays;
+import java.util.List;
 
 public class GameServiceTest {
     @Test
@@ -43,16 +46,67 @@ public class GameServiceTest {
 
     @Test
     void positiveJoinGame() throws DataAccessException {
-        var actual = 10;
-        var expected = 10;
-        Assertions.assertEquals(expected, actual);
+        var myObject = new UserService();
 
+        String username = "sam";
+        String password = "bobby";
+        String email = "ruffy@gmail.com";
+
+        RegisterRequest parameter1 = new RegisterRequest(username, password, email);
+
+        Auth auth = myObject.register(parameter1);
+
+        var gameService = new GameService();
+        String gameName = "someName";
+
+        Integer gameId = gameService.createGame(gameName);
+
+        var gameDAO = new MemoryGameDAO();
+        gameDAO.getGame(gameId);
+
+        String playerColor = "WHITE";
+
+        int actual = gameService.joinGame(auth.authToken(), playerColor, gameId);
+
+        int expected = -5;
+
+        Assertions.assertEquals(expected, actual);
     }
 
     @Test
     void negativeJoinGame() throws DataAccessException {
-        var actual = 10;
-        var expected = 10;
+        var myObject = new UserService();
+
+        String username = "sam";
+        String password = "bobby";
+        String email = "ruffy@gmail.com";
+
+        RegisterRequest parameter1 = new RegisterRequest(username, password, email);
+
+        String username2 = "flake";
+        String password2 = "weirdpassword";
+        String email2 = "noemail@gmail.com";
+
+        RegisterRequest parameter2 = new RegisterRequest(username2, password2, email2);
+
+        Auth auth = myObject.register(parameter1);
+        Auth auth2 = myObject.register(parameter2);
+
+        var gameService = new GameService();
+        String gameName = "someName";
+
+        Integer gameId = gameService.createGame(gameName);
+
+        var gameDAO = new MemoryGameDAO();
+        gameDAO.getGame(gameId);
+
+        String playerColor = "WHITE";
+
+        int value = (auth != null) ? gameService.joinGame(auth.authToken(), playerColor, gameId) : 0;
+
+        int actual = (auth2 != null) ? gameService.joinGame(auth2.authToken(), playerColor, gameId) : 0;
+        int expected = -2;
+
         Assertions.assertEquals(expected, actual);
     }
 
@@ -71,9 +125,21 @@ public class GameServiceTest {
         String gameName = "firstGame";
 
         myObject.createGame(gameName);
-        var actual = myObject.listGames("madeUpToken");
 
-        Assertions.assertNull(actual);
+        String gameName2 = "secondGame";
+
+        myObject.createGame(gameName2);
+
+        var authToken = auth.authToken();
+
+        var actual = myObject.listGames(authToken);
+
+        List<Game> expected = Arrays.asList(
+                new Game(1, null, null, "firstGame", null),
+                new Game(2, null, null, "secondGame", null)
+        );
+
+        Assertions.assertEquals(expected.size(), actual.size());
     }
     @Test
     void negativelistGames() throws DataAccessException {
@@ -91,6 +157,8 @@ public class GameServiceTest {
 
         myObject.createGame(gameName);
         var actual = myObject.listGames("madeUpToken");
+
+
 
         Assertions.assertNull(actual);
     }
