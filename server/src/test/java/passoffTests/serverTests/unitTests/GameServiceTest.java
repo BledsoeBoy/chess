@@ -90,8 +90,6 @@ public class GameServiceTest {
         RegisterRequest registrationRequest = new RegisterRequest(username, password, email);
         Auth auth = myObject.register(registrationRequest);
 
-        // Check if auth is not null before proceeding
-        if (auth != null) {
             // Create a game
             var gameService = new GameService();
             String gameName = "someGame";
@@ -104,10 +102,6 @@ public class GameServiceTest {
             // Ensure the join operation returns the expected error code
             int expectedErrorCode = -2;
             Assertions.assertEquals(expectedErrorCode, actual);
-        } else {
-            // Enhance the failure message with details about the registration request
-            Assertions.fail("User registration failed. Auth is null. Registration request: " + registrationRequest);
-        }
     }
 
     @Test
