@@ -104,7 +104,7 @@ public class GameServiceTest {
 
         String playerColor = "WHITE";
 
-        gameService.joinGame(auth.authToken(), playerColor, gameId);
+        int value = gameService.joinGame(auth.authToken(), playerColor, gameId);
         int actual = gameService.joinGame(auth2.authToken(), playerColor, gameId);
 
         int expected = -2;
@@ -132,7 +132,9 @@ public class GameServiceTest {
 
         myObject.createGame(gameName2);
 
-        var actual = myObject.listGames(auth.authToken());
+        var authToken = auth.authToken();
+
+        var actual = myObject.listGames(authToken);
 
         List<Game> expected = Arrays.asList(
                 new Game(1, null, null, "firstGame", null),
