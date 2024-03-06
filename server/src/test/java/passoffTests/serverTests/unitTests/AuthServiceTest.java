@@ -2,6 +2,7 @@ package passoffTests.serverTests.unitTests;
 
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
+import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 import handlers.requests.RegisterRequest;
 import model.Auth;
@@ -26,14 +27,15 @@ public class AuthServiceTest {
         // Check if auth is not null before accessing its properties
         String token = (auth != null) ? auth.authToken() : null;
 
-        var userDAO = new MemoryUserDAO();
-        var authDAO = new MemoryAuthDAO();
+        var userDao = new MemoryUserDAO();
+        var authDao = new MemoryAuthDAO();
+        var gameDao = new MemoryGameDAO();
 
-        myObject.clearApp();
+        myObject.clearApp(authDao, gameDao);
 
         boolean isNull = false;
 
-        if ((userDAO.getUser("sam")) == null && (authDAO.getAuth(token) == null)) {
+        if ((userDao.getUser("sam")) == null && (authDao.getAuth(token) == null)) {
             isNull = true;
         }
 

@@ -1,6 +1,5 @@
 package dataAccess;
 
-import handlers.requests.RegisterRequest;
 import model.Auth;
 
 public interface AuthDAO {
@@ -8,5 +7,4 @@ public interface AuthDAO {
     void deleteAuth(String authToken) throws DataAccessException;
     Auth getAuth(String authToken) throws DataAccessException;
     Auth createAuth(String req) throws DataAccessException;
-
 }

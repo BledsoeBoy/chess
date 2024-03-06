@@ -6,13 +6,12 @@ import dataAccess.MemoryGameDAO;
 import dataAccess.MemoryUserDAO;
 
 public class AuthService {
-    public int clearApp() throws DataAccessException {
+    public int clearApp(MemoryAuthDAO authDao, MemoryGameDAO gameDao) throws DataAccessException {
         var userDAO = new MemoryUserDAO();
-        var gameDAO = new MemoryGameDAO();
-        var authDAO = new MemoryAuthDAO();
+
         userDAO.clearUsers();
-        gameDAO.clearGames();
-        authDAO.clearAuths();
+        gameDao.clearGames();
+        authDao.clearAuths();
 
         return 0;
     }

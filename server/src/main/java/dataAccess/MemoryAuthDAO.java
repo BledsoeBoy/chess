@@ -1,8 +1,6 @@
 package dataAccess;
 
-import handlers.requests.RegisterRequest;
 import model.Auth;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;

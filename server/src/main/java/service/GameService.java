@@ -7,7 +7,6 @@ import model.Auth;
 import model.Game;
 
 import java.util.Collection;
-import java.util.Objects;
 
 public class GameService {
     public int createGame(String gameName) throws DataAccessException {
