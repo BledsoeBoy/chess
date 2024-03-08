@@ -23,20 +23,20 @@ public class Handlers {
     private final AuthService authService;
     private final UserService userService;
     private final GameService gameService;
-    private final MemoryAuthDAO authDao;
-    private final MemoryGameDAO gameDao;
+    private final AuthDAO authDao;
+    private final GameDAO gameDao;
     private final Gson gson;
-    public Handlers(AuthService authService, UserService userService, GameService gameService, MemoryAuthDAO authDao, MemoryGameDAO gameDao, Gson gson) {
-        this.authService = new AuthService();
-        this.userService = new UserService();
-        this.gameService = new GameService();
-        this.authDao = new MemoryAuthDAO();
-        this.gameDao = new MemoryGameDAO();
+    public Handlers(AuthService authService, UserService userService, GameService gameService, AuthDAO authDao, GameDAO gameDao, Gson gson) {
+        this.authService = authService;
+        this.userService = userService;
+        this.gameService = gameService;
+        this.authDao = authDao;
+        this.gameDao = gameDao;
         this.gson = new Gson();
     }
 
     public Object clearApp(Request req, Response res) throws DataAccessException {
-        authService.clearApp(authDao, gameDao);
+        authService.clearApp();
         res.status(200);
         return gson.toJson(null);
     }

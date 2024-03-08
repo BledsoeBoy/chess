@@ -18,10 +18,9 @@ public class MemoryAuthDAO implements AuthDAO {
             return auths.get(authToken);
         }
 
-        public Auth createAuth(String req) {
-            var authToken = UUID.randomUUID().toString();
-            var auth = new Auth(authToken, req);
-            auths.put(authToken, auth);
-            return auth;
+        public Auth createAuth(Auth auth) {
+            var authentication = new Auth(auth.authToken(), auth.username());
+            auths.put(auth.authToken(), authentication);
+            return authentication;
         }
 }

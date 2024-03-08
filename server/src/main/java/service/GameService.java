@@ -1,16 +1,20 @@
 package service;
 
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryGameDAO;
+import dataAccess.*;
 import model.Auth;
 import model.Game;
 
 import java.util.Collection;
 
 public class GameService {
+    private final AuthDAO authDAO;
+    private final GameDAO gameDAO;
+
+    public GameService(AuthDAO authDAO, GameDAO gameDAO) {
+        this.authDAO = authDAO;
+        this.gameDAO = gameDAO;
+    }
     public int createGame(String gameName) throws DataAccessException {
-        var gameDAO = new MemoryGameDAO();
         if (gameName != null) {
             return gameDAO.createGame(gameName);
         }
@@ -19,10 +23,11 @@ public class GameService {
         }
     }
     public int joinGame(String authToken, String playerColor, Integer gameId) throws DataAccessException {
-        var authDAO = new MemoryAuthDAO();
         Auth auth = authDAO.getAuth(authToken);
+        if (auth == null) {
+            return -10;
+        }
 
-        var gameDAO = new MemoryGameDAO();
         Game game = gameDAO.getGame(gameId);
 
         if (playerColor == null) {
@@ -39,13 +44,10 @@ public class GameService {
     }
 
     public Collection<Game> listGames(String authToken) throws DataAccessException {
-        var authDao = new MemoryAuthDAO();
-        Auth auth = authDao.getAuth(authToken);
+        Auth auth = authDAO.getAuth(authToken);
         if (auth == null) {
             return null;
         }
-
-        var gameDAO = new MemoryGameDAO();
         return gameDAO.listGames();
     }
 }

@@ -1,7 +1,9 @@
 package passoffTests.serverTests.unitTests;
 
 import dataAccess.DataAccessException;
+import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryGameDAO;
+import dataAccess.MemoryUserDAO;
 import handlers.requests.RegisterRequest;
 import model.Auth;
 import model.Game;
@@ -16,7 +18,7 @@ import java.util.List;
 public class GameServiceTest {
     @Test
     void positiveCreateGame() throws DataAccessException {
-        var myObject = new GameService();
+        var myObject = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
         String gameName = "someName";
 
         Integer gameId = myObject.createGame(gameName);
@@ -32,7 +34,7 @@ public class GameServiceTest {
 
     @Test
     void negativeCreateGame() throws DataAccessException {
-        var myObject = new GameService();
+        var myObject = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
         String gameName = null;
 
         var createdGameId = myObject.createGame(gameName);
@@ -46,7 +48,7 @@ public class GameServiceTest {
 
     @Test
     void positiveJoinGame() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "sam";
         String password = "bobby";
@@ -56,7 +58,7 @@ public class GameServiceTest {
 
         Auth auth = myObject.register(parameter1);
 
-        var gameService = new GameService();
+        var gameService = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
         String gameName = "someName";
 
         Integer gameId = gameService.createGame(gameName);
@@ -75,7 +77,7 @@ public class GameServiceTest {
 
     @Test
     void negativeJoinGame() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "sam";
         String password = "bobby";
@@ -92,7 +94,7 @@ public class GameServiceTest {
         Auth auth = myObject.register(parameter1);
         Auth auth2 = myObject.register(parameter2);
 
-        var gameService = new GameService();
+        var gameService = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
         String gameName = "someName";
 
         Integer gameId = gameService.createGame(gameName);
@@ -112,7 +114,7 @@ public class GameServiceTest {
 
     @Test
     void positivelistGames() throws DataAccessException {
-        var userService = new UserService();
+        var userService = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "sam";
         String password = "bobby";
@@ -121,7 +123,7 @@ public class GameServiceTest {
         RegisterRequest parameter1 = new RegisterRequest(username, password, email);
         Auth auth = userService.register(parameter1);
 
-        var myObject = new GameService();
+        var myObject = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
         String gameName = "firstGame";
 
         myObject.createGame(gameName);
@@ -143,7 +145,7 @@ public class GameServiceTest {
     }
     @Test
     void negativelistGames() throws DataAccessException {
-        var userService = new UserService();
+        var userService = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "sam";
         String password = "bobby";
@@ -152,7 +154,7 @@ public class GameServiceTest {
         RegisterRequest parameter1 = new RegisterRequest(username, password, email);
         Auth auth = userService.register(parameter1);
 
-        var myObject = new GameService();
+        var myObject = new GameService(new MemoryAuthDAO(), new MemoryGameDAO());
         String gameName = "firstGame";
 
         myObject.createGame(gameName);

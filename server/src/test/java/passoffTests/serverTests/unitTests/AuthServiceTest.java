@@ -1,9 +1,6 @@
 package passoffTests.serverTests.unitTests;
 
-import dataAccess.DataAccessException;
-import dataAccess.MemoryAuthDAO;
-import dataAccess.MemoryGameDAO;
-import dataAccess.MemoryUserDAO;
+import dataAccess.*;
 import handlers.requests.RegisterRequest;
 import model.Auth;
 import org.junit.jupiter.api.Assertions;
@@ -14,8 +11,8 @@ import service.UserService;
 public class AuthServiceTest {
     @Test
     void clearApp() throws DataAccessException {
-        var userService = new UserService();
-        var myObject = new AuthService();
+        var userService = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
+        var myObject = new AuthService(new MemoryAuthDAO(), new MemoryGameDAO(), new MemoryUserDAO());
 
         String username = "juan";
         String password = "password1";
@@ -31,7 +28,7 @@ public class AuthServiceTest {
         var authDao = new MemoryAuthDAO();
         var gameDao = new MemoryGameDAO();
 
-        myObject.clearApp(authDao, gameDao);
+        myObject.clearApp();
 
         boolean isNull = false;
 

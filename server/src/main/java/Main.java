@@ -5,6 +5,5 @@ public class Main {
         var server = new Server();
 
         server.run(port);
-        System.out.println();
     }
 };

@@ -1,6 +1,8 @@
 package passoffTests.serverTests.unitTests;
 
 import dataAccess.DataAccessException;
+import dataAccess.MemoryAuthDAO;
+import dataAccess.MemoryUserDAO;
 import handlers.requests.RegisterRequest;
 import model.Auth;
 import org.junit.jupiter.api.Assertions;
@@ -13,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 public class UserServiceTest {
     @Test
     void positiveRegister() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "sam";
         String password = "bobby";
@@ -29,7 +31,7 @@ public class UserServiceTest {
     }
     @Test
     void negativeRegister() throws DataAccessException {
-        UserService userService = new UserService();
+        UserService userService = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         // Create a user with a specific username
         RegisterRequest existingUserRequest = new RegisterRequest("existingUser", "password123", "existing@example.com");
@@ -43,7 +45,7 @@ public class UserServiceTest {
     }
     @Test
     void positiveLogin() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "juan";
         String password = "password1";
@@ -63,7 +65,7 @@ public class UserServiceTest {
 
     @Test
     void negativeLogin() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "juan";
         String password = "password1";
@@ -79,7 +81,7 @@ public class UserServiceTest {
     }
     @Test
     void positiveLogout() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "juan";
         String password = "password1";
@@ -97,7 +99,7 @@ public class UserServiceTest {
 
     @Test
     void negativeLogout() throws DataAccessException {
-        var myObject = new UserService();
+        var myObject = new UserService(new MemoryAuthDAO(), new MemoryUserDAO());
 
         String username = "jobe";
         String password = "something";
