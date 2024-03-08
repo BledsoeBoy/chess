@@ -1,7 +1,5 @@
 package handlers.requests;
 
-import model.Auth;
-
 public class JoinGameRequest {
     private String playerColor;
     private Integer gameID;

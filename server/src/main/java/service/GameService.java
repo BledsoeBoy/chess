@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.*;
 import model.Auth;
 import model.Game;
@@ -16,7 +17,8 @@ public class GameService {
     }
     public int createGame(String gameName) throws DataAccessException {
         if (gameName != null) {
-            return gameDAO.createGame(gameName);
+            Game game = new Game(1, null, null, gameName, new ChessGame());
+            return gameDAO.createGame(game);
         }
         else {
             return 0;

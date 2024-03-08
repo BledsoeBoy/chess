@@ -3,6 +3,8 @@ package dataAccess;
 import java.sql.*;
 import java.util.Properties;
 
+import static java.sql.Statement.RETURN_GENERATED_KEYS;
+
 public class DatabaseManager {
     private static final String databaseName;
     private static final String user;
@@ -38,7 +40,7 @@ public class DatabaseManager {
         try {
             var statement = "CREATE DATABASE IF NOT EXISTS " + databaseName;
             var conn = DriverManager.getConnection(connectionUrl, user, password);
-            try (var preparedStatement = conn.prepareStatement(statement)) {
+            try (var preparedStatement = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
                 preparedStatement.executeUpdate();
             }
         } catch (SQLException e) {

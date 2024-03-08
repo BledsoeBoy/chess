@@ -134,13 +134,17 @@ public class Handlers {
         }
 
         JoinGameRequest request = gson.fromJson(req.body(), JoinGameRequest.class);
-
         Integer gameID = request.getGameId();
         String playerColor = request.getPlayerColor();
-
         Game game = gameDao.getGame(gameID);
 
-        if (gameID == null || game == null) {
+        if (gameID == null) {
+            res.status(400);
+            var response = new Responses("Error: bad request");
+            return gson.toJson(response);
+        }
+
+        if (game == null) {
             res.status(400);
             var response = new Responses("Error: bad request");
             return gson.toJson(response);

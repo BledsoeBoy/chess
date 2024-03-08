@@ -16,13 +16,11 @@ public class MemoryGameDAO implements GameDAO {
         public Game getGame(int gameId) {
                 return games.get(gameId);
         }
-        public int createGame(String gameName) {
-                ChessGame game = new ChessGame();
-
+        public int createGame(Game game) {
                 for (Map.Entry<Integer, Game> entry : games.entrySet()) {
                         nextId++;
                 }
-                var gameData = new Game(nextId, null, null, gameName, game);
+                var gameData = new Game(nextId, null, null, game.gameName(), game.game());
 
                 games.put(gameData.gameID(), gameData);
 

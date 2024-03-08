@@ -1,7 +1,6 @@
 package service;
 
 import dataAccess.*;
-import model.Game;
 
 public class AuthService {
     private final AuthDAO authDAO;
