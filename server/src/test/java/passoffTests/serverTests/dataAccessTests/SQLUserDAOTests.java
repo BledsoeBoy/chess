@@ -1,11 +1,8 @@
 package passoffTests.serverTests.dataAccessTests;
 
-import chess.ChessGame;
 import dataAccess.DataAccessException;
-import dataAccess.SQLGameDAO;
 import dataAccess.SQLUserDAO;
 import handlers.requests.RegisterRequest;
-import model.Game;
 import model.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -56,11 +53,11 @@ public class SQLUserDAOTests {
 
     @Test
     void positiveCreateUserTest() throws DataAccessException {
-        RegisterRequest regReq = new RegisterRequest("billyBob", "somethingEpic", "billyBob@email.com");
+        RegisterRequest regReq = new RegisterRequest("maryJane", "pretty", "hot@email.com");
         sqlUserDAO.createUser(regReq);
 
-        String expected = "billyBob";
-        User actualUser =  sqlUserDAO.getUser("billyBob");
+        String expected = "maryJane";
+        User actualUser =  sqlUserDAO.getUser("maryJane");
         String actual = actualUser.username();
 
         Assertions.assertEquals(expected, actual);
@@ -68,7 +65,7 @@ public class SQLUserDAOTests {
 
     @Test
     void negativeCreateUserTest() throws DataAccessException {
-        RegisterRequest regReq = new RegisterRequest("billyBob", null, "billyBob@email.com");
+        RegisterRequest regReq = new RegisterRequest("maryJane", null, "cutie@email.com");
 
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             sqlUserDAO.createUser(regReq);
