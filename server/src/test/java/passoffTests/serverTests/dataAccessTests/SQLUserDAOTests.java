@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.SQLGameDAO;
 import dataAccess.SQLUserDAO;
+import handlers.requests.RegisterRequest;
 import model.Game;
 import model.User;
 import org.junit.jupiter.api.Assertions;
@@ -19,14 +20,58 @@ public class SQLUserDAOTests {
     }
     @Test
     void clearGamesTest() throws DataAccessException {
-        User user = new User("billyBob", "somethingEpic", "billyBob@email.com");
-        sqlUserDAO.createUser(user);
+        RegisterRequest regReq = new RegisterRequest("billyBob", "somethingEpic", "billyBob@email.com");
+        sqlUserDAO.createUser(regReq);
 
-        sqlUserDAO.clearGames();
+        sqlUserDAO.clearUsers();
 
-        Game expected = null;
-        Game actual =  sqlGameDAO.getGame(game.gameID());
+        User expected = null;
+        User actual =  sqlUserDAO.getUser("billyBob");
 
         Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void positiveGetUserTest() throws DataAccessException {
+        RegisterRequest regReq = new RegisterRequest("billyBob", "somethingEpic", "billyBob@email.com");
+        sqlUserDAO.createUser(regReq);
+
+        String expected = "billyBob";
+        User actualUser =  sqlUserDAO.getUser("billyBob");
+        String actual = actualUser.username();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void negativeGetUserTest() throws DataAccessException {
+        RegisterRequest regReq = new RegisterRequest("billyBob", "somethingEpic", "billyBob@email.com");
+        sqlUserDAO.createUser(regReq);
+
+        User expected = null;
+        User actual =  sqlUserDAO.getUser("ricky");
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void positiveCreateUserTest() throws DataAccessException {
+        RegisterRequest regReq = new RegisterRequest("billyBob", "somethingEpic", "billyBob@email.com");
+        sqlUserDAO.createUser(regReq);
+
+        String expected = "billyBob";
+        User actualUser =  sqlUserDAO.getUser("billyBob");
+        String actual = actualUser.username();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @Test
+    void negativeCreateUserTest() throws DataAccessException {
+        RegisterRequest regReq = new RegisterRequest("billyBob", null, "billyBob@email.com");
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            sqlUserDAO.createUser(regReq);
+        });
     }
 }
