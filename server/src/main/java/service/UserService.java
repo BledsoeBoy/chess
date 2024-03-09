@@ -3,6 +3,7 @@ package service;
 import dataAccess.*;
 import handlers.requests.RegisterRequest;
 import model.Auth;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.UUID;
 
@@ -18,7 +19,7 @@ public class UserService {
         var user = userDAO.getUser(req.username());
         var authToken = UUID.randomUUID().toString();
         Auth auth = new Auth(authToken, req.username());
-        if (user == null) {
+        if (user == null && req.password() != null) {
             userDAO.createUser(req);
             return authDAO.createAuth(auth);
         }
@@ -32,7 +33,15 @@ public class UserService {
         var authToken = UUID.randomUUID().toString();
         Auth auth = new Auth(authToken, username);
 
-        if (user != null && user.password().equals(password)) {
+        if (user == null) {
+            return null;
+        }
+
+        var hashedPassword = user.password();
+
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+        if (user != null && encoder.matches(password, hashedPassword)) {
             return authDAO.createAuth(auth);
         } else {
             return null;
