@@ -26,7 +26,6 @@ public class ChessClient {
             return switch (cmd) {
                 case "login" -> login(params);
                 case "register" -> register(params);
-
                 case "create" -> createGame(params);
                 case "list" -> listGames();
                 case "logout" -> logout();
