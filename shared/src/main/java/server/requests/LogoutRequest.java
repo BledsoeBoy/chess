@@ -1,4 +1,4 @@
-package handlers.requests;
+package server.requests;
 
 public record LogoutRequest() {
 }

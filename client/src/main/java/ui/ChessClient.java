@@ -3,19 +3,19 @@ package ui;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.Game;
+import model.User;
 import server.ServerFacade;
+import server.requests.LoginRequest;
 
 import java.util.Arrays;
 
 public class ChessClient {
     private String playerName = null;
     private final ServerFacade server;
-    private final String serverUrl;
     private State state = State.LOGGED_OUT;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
-        this.serverUrl = serverUrl;
     }
 
     public String eval(String input) {
@@ -45,6 +45,8 @@ public class ChessClient {
             state = State.LOGGED_IN;
             var name = params[0];
             var password = params[1];
+            var login = new LoginRequest(name, password);
+            server.login(login);
             return String.format("You logged in as %s.", name);
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -56,6 +58,8 @@ public class ChessClient {
             var name = params[0];
             var password = params[1];
             var email = params[2];
+            User user = new User(name, password, email);
+            server.register(user);
             return String.format("You registered as %s.", name);
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
@@ -65,6 +69,7 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 1) {
             var gameName = params[0];
+            server.createGame(gameName);
             return String.format("You created the game: %s", gameName);
         }
         throw new ResponseException(400, "Expected: <NAME>");
@@ -75,6 +80,8 @@ public class ChessClient {
         if (params.length >= 2) {
             try {
                 var id = Integer.parseInt(params[0]);
+                var playerColor = params[1];
+                server.joinGame(id, playerColor);
                 var game = getGame(id);
                 if (game != null) {
                     return String.format("You are now playing on game: %s", game.gameName());
@@ -90,6 +97,8 @@ public class ChessClient {
         if (params.length == 1) {
             try {
                 var id = Integer.parseInt(params[0]);
+                String playerColor = null;
+                server.joinGame(id, playerColor);
                 var game = getGame(id);
                 if (game != null) {
                     return String.format("You are now observing on game: %s", game.gameName());
@@ -114,6 +123,7 @@ public class ChessClient {
     public String logout() throws ResponseException {
         assertSignedIn();
         state = State.LOGGED_OUT;
+        server.logout();
         return String.format("%s left the game", playerName);
     }
 

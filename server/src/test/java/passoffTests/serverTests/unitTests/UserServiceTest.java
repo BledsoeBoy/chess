@@ -3,7 +3,7 @@ package passoffTests.serverTests.unitTests;
 import dataAccess.DataAccessException;
 import dataAccess.MemoryAuthDAO;
 import dataAccess.MemoryUserDAO;
-import handlers.requests.RegisterRequest;
+import server.requests.RegisterRequest;
 import model.Auth;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

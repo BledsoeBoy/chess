@@ -5,6 +5,8 @@ import exception.ResponseException;
 import model.Auth;
 import model.Game;
 import model.User;
+import server.requests.JoinGameRequest;
+import server.requests.LoginRequest;
 
 import java.io.*;
 import java.net.*;
@@ -17,9 +19,9 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-    public Auth login(User user) throws ResponseException {
+    public Auth login(LoginRequest login) throws ResponseException {
         var path = "/session";
-        return this.makeRequest("POST", path, user, Auth.class);
+        return this.makeRequest("POST", path, login, Auth.class);
     }
 
     public Auth register(User user) throws ResponseException {
@@ -27,15 +29,23 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, Auth.class);
     }
 
-    public void logout(int id) throws ResponseException {
-        var path = String.format("/session", id);
+    public int createGame(String gameName) throws ResponseException {
+        var path = "/game";
+        return this.makeRequest("POST", path, gameName, int.class);
+    }
+
+    public int joinGame(int id, String playerColor) throws ResponseException {
+        var path = "/game";
+        JoinGameRequest req = new JoinGameRequest(playerColor, id);
+        return this.makeRequest("PUT", path, req, int.class);
+    }
+
+
+    public void logout() throws ResponseException {
+        var path = "/session";
         this.makeRequest("DELETE", path, null, null);
     }
 
-    public int clearApp() throws ResponseException {
-        var path = "/db";
-        return this.makeRequest("DELETE", path, null, null);
-    }
 
     public Game[] listGames() throws ResponseException {
         var path = "/game";

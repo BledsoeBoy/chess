@@ -1,6 +1,6 @@
 package dataAccess;
 
-import handlers.requests.RegisterRequest;
+import server.requests.RegisterRequest;
 import model.User;
 
 import java.util.HashMap;

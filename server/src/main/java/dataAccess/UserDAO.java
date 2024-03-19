@@ -1,14 +1,7 @@
 package dataAccess;
 
-import com.google.gson.Gson;
-import handlers.requests.RegisterRequest;
-import model.Auth;
+import server.requests.RegisterRequest;
 import model.User;
-
-import java.sql.ResultSet;
-import java.sql.SQLException;
-
-import static java.sql.Types.NULL;
 
 public interface UserDAO {
     User getUser(String username) throws DataAccessException;

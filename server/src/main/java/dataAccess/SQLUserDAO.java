@@ -1,8 +1,7 @@
 package dataAccess;
 
 import com.google.gson.Gson;
-import handlers.requests.RegisterRequest;
-import model.Auth;
+import server.requests.RegisterRequest;
 import model.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 

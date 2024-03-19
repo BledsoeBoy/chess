@@ -1,7 +1,7 @@
 package service;
 
 import dataAccess.*;
-import handlers.requests.RegisterRequest;
+import server.requests.RegisterRequest;
 import model.Auth;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
