@@ -160,6 +160,16 @@ public class ServerFacadeTests {
     }
 
     @Test
-    void listGames() {
+    void positiveListGamesTest() throws ResponseException {
+        User user = new User("juan", "something", "random@email");
+        facade.register(user);
+        CreateGameRequest req = new CreateGameRequest();
+        req.setGameName("testGame");
+        facade.createGame(req);
+        var games = facade.listGames();
+        int actualSize = games.length;
+        int expectedSize = 1;
+
+        Assertions.assertEquals(expectedSize, actualSize);
     }
 }
