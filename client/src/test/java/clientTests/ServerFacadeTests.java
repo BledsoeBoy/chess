@@ -10,9 +10,7 @@ import server.Server;
 import server.ServerFacade;
 import server.requests.CreateGameRequest;
 import server.requests.LoginRequest;
-import server.requests.RegisterRequest;
 import server.responses.CreateGameSuccessResponse;
-import service.AuthService;
 
 
 public class ServerFacadeTests {
@@ -171,5 +169,11 @@ public class ServerFacadeTests {
         int expectedSize = 1;
 
         Assertions.assertEquals(expectedSize, actualSize);
+    }
+    @Test
+    void negativeListGamesTest() throws ResponseException {
+        Assertions.assertThrows(exception.ResponseException.class, () -> {
+            facade.listGames();
+        });
     }
 }
