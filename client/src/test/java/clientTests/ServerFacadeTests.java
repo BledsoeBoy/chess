@@ -3,6 +3,7 @@ package clientTests;
 import dataAccess.*;
 import exception.ResponseException;
 import model.Auth;
+import model.Game;
 import model.User;
 import org.junit.jupiter.api.*;
 import server.Server;
@@ -87,7 +88,6 @@ public class ServerFacadeTests {
             facade.login(login);
         });
     }
-
     @Test
     void positiveCreateGameTest() throws ResponseException {
         User user = new User("juan", "something", "random@email");
@@ -108,13 +108,55 @@ public class ServerFacadeTests {
         });
     }
 
-
     @Test
-    void joinGame() {
+    void positiveJoinGameTest() throws ResponseException {
+        User user = new User("juan", "something", "random@email");
+        facade.register(user);
+        CreateGameRequest req = new CreateGameRequest();
+        req.setGameName("testGame");
+        CreateGameSuccessResponse res = facade.createGame(req);
+
+        facade.joinGame(res.getGameID(), "WHITE");
+
+        Game[] games = facade.listGames();
+
+        boolean playerIsIn = false;
+        for (var game : games) {
+            if (game.whiteUsername().equals("juan")) {
+                playerIsIn = true;
+                break;
+            }
+        }
+
+        Assertions.assertTrue(playerIsIn);
     }
 
     @Test
-    void logout() {
+    void negativeJoinGameTest() throws ResponseException {
+        User user = new User("juan", "something", "random@email");
+        facade.register(user);
+
+        Assertions.assertThrows(exception.ResponseException.class, () -> {
+            facade.joinGame(4, "WHITE");
+        });
+    }
+
+    @Test
+    void positiveLogoutTest() throws ResponseException {
+        User user = new User("juan", "something", "random@email");
+        facade.register(user);
+
+        facade.logout();
+        Assertions.assertThrows(exception.ResponseException.class, () -> {
+            facade.listGames();
+        });
+    }
+
+    @Test
+    void negativeLogoutTest() throws ResponseException {
+        Assertions.assertThrows(exception.ResponseException.class, () -> {
+            facade.logout();
+        });
     }
 
     @Test
