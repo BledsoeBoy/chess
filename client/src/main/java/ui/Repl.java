@@ -12,8 +12,7 @@ public class Repl {
     }
 
     public void run() {
-        System.out.println(BLACK_KING + " Welcome to the chess game. Sign in to start.");
-        System.out.print(client.help());
+        System.out.println(BLACK_KING + " Welcome to the chess game. Try Help to get started.");
 
         Scanner scanner = new Scanner(System.in);
         var result = "";
@@ -33,7 +32,10 @@ public class Repl {
     }
 
     private void printPrompt() {
-        System.out.print("\n" + RESET_TEXT_COLOR + ">>> " + SET_TEXT_COLOR_GREEN);
+        if (client.state == State.LOGGED_OUT) {
+            System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[LOGGED_OUT]" + ">>> " + SET_TEXT_COLOR_GREEN);
+        } else {
+            System.out.print("\n" + SET_TEXT_COLOR_WHITE + "[LOGGED_IN]" + ">>> " + SET_TEXT_COLOR_GREEN);
+        }
     }
-
 }

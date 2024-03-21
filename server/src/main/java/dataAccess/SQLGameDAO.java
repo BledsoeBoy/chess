@@ -77,8 +77,8 @@ public class SQLGameDAO implements GameDAO{
         var gameName = rs.getString("gameName");
         var chessGameString = rs.getString("chessGame").toString();
         var chessGame = new Gson().fromJson(chessGameString, ChessGame.class);
-        var game = new Game(id, whiteUsername, blackUsername, gameName, chessGame);
-        return game;
+        Game response = new Game(id, whiteUsername, blackUsername, gameName, chessGame);
+        return response;
     }
 
     private int executeUpdate(String statement, Object... params) throws DataAccessException {

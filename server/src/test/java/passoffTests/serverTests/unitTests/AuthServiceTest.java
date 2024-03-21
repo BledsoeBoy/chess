@@ -26,7 +26,6 @@ public class AuthServiceTest {
 
         var userDao = new MemoryUserDAO();
         var authDao = new MemoryAuthDAO();
-        var gameDao = new MemoryGameDAO();
 
         myObject.clearApp();
 

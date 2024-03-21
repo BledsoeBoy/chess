@@ -7,8 +7,8 @@ import server.requests.CreateGameRequest;
 import server.requests.JoinGameRequest;
 import server.requests.LoginRequest;
 import server.requests.RegisterRequest;
-import handlers.responses.CreateGameSuccessResponse;
-import handlers.responses.Responses;
+import server.responses.CreateGameSuccessResponse;
+import server.responses.Responses;
 import model.Auth;
 import model.Game;
 import model.User;
@@ -17,6 +17,7 @@ import service.GameService;
 import service.UserService;
 import spark.*;
 
+import java.util.Collection;
 import java.util.Map;
 
 public class Handlers {
@@ -111,7 +112,8 @@ public class Handlers {
     public Object listGames(Request req, Response res) throws DataAccessException {
         String authToken = req.headers("authorization");
 
-        var list = gameService.listGames(authToken);
+        Collection<Game> list = gameService.listGames(authToken);
+
 
         if (list == null) {
             res.status(401); // Unauthorized

@@ -5,17 +5,22 @@ import exception.ResponseException;
 import model.Game;
 import model.User;
 import server.ServerFacade;
+import server.requests.CreateGameRequest;
 import server.requests.LoginRequest;
+import server.responses.CreateGameSuccessResponse;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class ChessClient {
     private String playerName = null;
+    private Integer gameID = null;
     private final ServerFacade server;
-    private State state = State.LOGGED_OUT;
+    private Map<Integer, Game> list = new HashMap<>();
+    public State state = State.LOGGED_OUT;
 
     public ChessClient(String serverUrl) {
         server = new ServerFacade(serverUrl);
+
     }
 
     public String eval(String input) {
@@ -30,7 +35,7 @@ public class ChessClient {
                 case "list" -> listGames();
                 case "logout" -> logout();
                 case "join" -> joinGame(params);
-                case "observe" -> observeGame();
+                case "observe" -> observeGame(params);
                 case "quit" -> "quit";
                 default -> help();
             };
@@ -42,11 +47,11 @@ public class ChessClient {
     public String login(String... params) throws ResponseException {
         if (params.length >= 2) {
             state = State.LOGGED_IN;
-            var name = params[0];
+            playerName = params[0];
             var password = params[1];
-            var login = new LoginRequest(name, password);
+            var login = new LoginRequest(playerName, password);
             server.login(login);
-            return String.format("You logged in as %s.", name);
+            return String.format("You logged in as %s.", playerName);
         }
         throw new ResponseException(400, "Expected: <username> <password>");
     }
@@ -54,12 +59,12 @@ public class ChessClient {
     public String register(String... params) throws ResponseException {
         if (params.length >= 3) {
             state = State.LOGGED_IN;
-            var name = params[0];
+            playerName = params[0];
             var password = params[1];
             var email = params[2];
-            User user = new User(name, password, email);
+            User user = new User(playerName, password, email);
             server.register(user);
-            return String.format("You registered as %s.", name);
+            return String.format("You registered as %s.", playerName);
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
     }
@@ -68,8 +73,12 @@ public class ChessClient {
         assertSignedIn();
         if (params.length == 1) {
             var gameName = params[0];
-            server.createGame(gameName);
-            return String.format("You created the game: %s", gameName);
+            CreateGameRequest game = new CreateGameRequest();
+            game.setGameName(gameName);
+            CreateGameSuccessResponse response = server.createGame(game);
+            gameID = response.getGameID();
+            String output = String.format("You created the game with gameID: %d", gameID);
+            return output;
         }
         throw new ResponseException(400, "Expected: <NAME>");
     }
@@ -78,12 +87,15 @@ public class ChessClient {
         assertSignedIn();
         if (params.length >= 2) {
             try {
-                var id = Integer.parseInt(params[0]);
-                var playerColor = params[1];
-                server.joinGame(id, playerColor);
-                var game = getGame(id);
+                var identifier = Integer.parseInt(params[0]);
+                var color = params[1];
+                String playerColor = color.toUpperCase();
+                var game = getGame(identifier);
+
                 if (game != null) {
-                    return String.format("You are now playing on game: %s", game.gameName());
+                    server.joinGame(game.gameID(), playerColor);
+                    ChessGame.run();
+                    return String.format("\nYou are now playing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {
             }
@@ -96,11 +108,11 @@ public class ChessClient {
         if (params.length == 1) {
             try {
                 var id = Integer.parseInt(params[0]);
-                String playerColor = null;
-                server.joinGame(id, playerColor);
                 var game = getGame(id);
                 if (game != null) {
-                    return String.format("You are now observing on game: %s", game.gameName());
+                    server.joinGame(game.gameID(), null);
+                    ChessGame.run();
+                    return String.format("\nYou are now observing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {
             }
@@ -112,10 +124,23 @@ public class ChessClient {
         assertSignedIn();
         var games = server.listGames();
         var result = new StringBuilder();
-        var gson = new Gson();
-        for (var game : games) {
-            result.append(gson.toJson(game)).append('\n');
+        if (games == null) {
+            return "No games";
         }
+
+        int count = 0;
+
+        for (var game : games) {
+            int gameID = game.gameID();
+            String name = game.gameName();
+            String whiteUsername = game.whiteUsername();
+            String blackUsername = game.blackUsername();
+
+            result.append(count).append(". ").append("gameID: ").append(gameID).append(" Game Name: ").append(name).append(" White User: ").append(whiteUsername).append(" Black User: ").append(blackUsername).append("\n");
+            list.put(count, game);
+            count++;
+        }
+
         return result.toString();
     }
 
@@ -126,9 +151,14 @@ public class ChessClient {
         return String.format("%s left the game", playerName);
     }
 
-    private Game getGame(int id) throws ResponseException {
-        for (var game : server.listGames()) {
-            if (game.gameID() == id) {
+    private Game getGame(int identifier) throws ResponseException {
+        if (server.listGames() == null) {
+            return null;
+        }
+
+        for (Integer key : list.keySet()) {
+            if (key == identifier) {
+                Game game = list.get(key);
                 return game;
             }
         }
