@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import dataAccess.*;
 import server.requests.CreateGameRequest;
+import server.websocket.WebSocketHandler;
 import server.requests.JoinGameRequest;
 import server.requests.LoginRequest;
 import server.requests.RegisterRequest;
@@ -27,13 +28,15 @@ public class Handlers {
     private final AuthDAO authDao;
     private final GameDAO gameDao;
     private final Gson gson;
-    public Handlers(AuthService authService, UserService userService, GameService gameService, AuthDAO authDao, GameDAO gameDao, Gson gson) {
+    private final WebSocketHandler webSocketHandler;
+    public Handlers(AuthService authService, UserService userService, GameService gameService, AuthDAO authDao, GameDAO gameDao, Gson gson, WebSocketHandler webSocketHandler) {
         this.authService = authService;
         this.userService = userService;
         this.gameService = gameService;
         this.authDao = authDao;
         this.gameDao = gameDao;
-        this.gson = new Gson();
+        this.gson = gson;
+        this.webSocketHandler = webSocketHandler;
     }
 
     public Object clearApp(Request req, Response res) throws DataAccessException {

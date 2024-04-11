@@ -2,6 +2,7 @@ package server;
 import com.google.gson.Gson;
 import dataAccess.*;
 import handlers.Handlers;
+import server.websocket.WebSocketHandler;
 import service.AuthService;
 import service.GameService;
 import service.UserService;
@@ -21,8 +22,11 @@ public class Server {
             UserService userService = new UserService(authDAO, userDAO);
             GameService gameService = new GameService(authDAO, gameDAO);
             Gson gson = new Gson();
+            WebSocketHandler webSocketHandler = new WebSocketHandler();
 
-            Handlers handlers = new Handlers(authService, userService, gameService, authDAO, gameDAO, gson);
+            Handlers handlers = new Handlers(authService, userService, gameService, authDAO, gameDAO, gson, webSocketHandler);
+
+            Spark.webSocket("/connect", webSocketHandler);
 
             // No need to create an instance of Handlers since the methods are static
             // Register your endpoints and handle exceptions here.

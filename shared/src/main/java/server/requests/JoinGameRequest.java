@@ -1,8 +1,8 @@
 package server.requests;
 
 public class JoinGameRequest {
-    private String playerColor;
-    private Integer gameID;
+    private final String playerColor;
+    private final Integer gameID;
     public JoinGameRequest(String playerColor, Integer gameID) {
         // Default constructor for Gson deserialization
         this.playerColor = playerColor;

@@ -4,6 +4,6 @@ public class Main {
         int port = 8080;
         var server = new Server();
 
-        server.run(port);
+        Server.run(port);
     }
-};
+}

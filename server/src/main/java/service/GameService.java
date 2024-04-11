@@ -10,7 +10,6 @@ import java.util.Collection;
 public class GameService {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
-    private static int gameId = 1;
 
     public GameService(AuthDAO authDAO, GameDAO gameDAO) {
         this.authDAO = authDAO;
@@ -18,8 +17,7 @@ public class GameService {
     }
     public int createGame(String gameName) throws DataAccessException {
         if (gameName != null) {
-            Game game = new Game(gameId, null, null, gameName, new ChessGame());
-            gameId++;
+            Game game = new Game(-1, null, null, gameName, new ChessGame());
             return gameDAO.createGame(game);
         }
         else {

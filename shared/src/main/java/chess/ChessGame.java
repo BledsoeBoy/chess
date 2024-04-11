@@ -19,6 +19,8 @@ public class ChessGame {
 
     }
 
+    //-------------------------Put bool to see if game is over here (for resign)
+
     /**
      * @return Which team's turn it is
      */

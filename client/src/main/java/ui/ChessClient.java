@@ -8,24 +8,32 @@ import server.ServerFacade;
 import server.requests.CreateGameRequest;
 import server.requests.LoginRequest;
 import server.responses.CreateGameSuccessResponse;
+import ui.websocket.NotificationHandler;
+import ui.websocket.WebSocketFacade;
+
+import static ui.EscapeSequences.*;
 
 import java.util.*;
 
 public class ChessClient {
     private String playerName = null;
-    private Integer gameID = null;
     private final ServerFacade server;
-    private Map<Integer, Game> list = new HashMap<>();
+    private Integer gameID = null;
+    private final String serverUrl;
+    private final Map<Integer, Game> list = new HashMap<>();
+    private final NotificationHandler notificationHandler;
+    private WebSocketFacade ws;
     public State state = State.LOGGED_OUT;
 
-    public ChessClient(String serverUrl) {
+    public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
-
+        this.serverUrl = serverUrl;
+        this.notificationHandler = notificationHandler;
     }
 
     public String eval(String input) {
         try {
-            var tokens = input.toLowerCase().split(" ");
+            var tokens = input.split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
@@ -71,13 +79,13 @@ public class ChessClient {
 
     public String createGame(String... params) throws ResponseException {
         assertSignedIn();
-        if (params.length == 1) {
-            var gameName = params[0];
+        if (params.length >= 1) {
+            var gameName = String.join(" ", params);
             CreateGameRequest game = new CreateGameRequest();
             game.setGameName(gameName);
             CreateGameSuccessResponse response = server.createGame(game);
             gameID = response.getGameID();
-            String output = String.format("You created the game with gameID: %d", gameID);
+            String output = String.format("You created the game with gameName: %s", gameName);
             return output;
         }
         throw new ResponseException(400, "Expected: <NAME>");
@@ -127,16 +135,23 @@ public class ChessClient {
         if (games == null) {
             return "No games";
         }
-
-        int count = 0;
+        int count = 1;
 
         for (var game : games) {
-            int gameID = game.gameID();
             String name = game.gameName();
             String whiteUsername = game.whiteUsername();
             String blackUsername = game.blackUsername();
+            if(whiteUsername == null) {
+                whiteUsername = "No player";
+            }
 
-            result.append(count).append(". ").append("gameID: ").append(gameID).append(" Game Name: ").append(name).append(" White User: ").append(whiteUsername).append(" Black User: ").append(blackUsername).append("\n");
+            if(blackUsername == null) {
+                blackUsername = "No player";
+            }
+
+            result.append(SET_TEXT_COLOR_BLUE).append(count).append(". ").append(SET_TEXT_COLOR_MAGENTA).append(" Game Name: ").
+                    append(SET_TEXT_COLOR_BLUE).append(name).append(SET_TEXT_COLOR_MAGENTA).append(" White User: ").append(SET_TEXT_COLOR_BLUE).
+                    append(whiteUsername).append(SET_TEXT_COLOR_MAGENTA).append(" Black User: ").append(SET_TEXT_COLOR_BLUE).append(blackUsername).append("\n");
             list.put(count, game);
             count++;
         }

@@ -29,11 +29,7 @@ public class AuthServiceTest {
 
         myObject.clearApp();
 
-        boolean isNull = false;
-
-        if ((userDao.getUser("sam")) == null && (authDao.getAuth(token) == null)) {
-            isNull = true;
-        }
+        boolean isNull = (userDao.getUser("sam")) == null && (authDao.getAuth(token) == null);
 
         Assertions.assertTrue(isNull);
     }

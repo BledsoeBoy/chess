@@ -23,9 +23,9 @@ public class SQLGameDAO implements GameDAO{
     }
     public int createGame(Game game) throws DataAccessException {
         ChessGame chessGame = game.game();
-        var statement = "INSERT INTO game (gameID, whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?, ?)";
+        var statement = "INSERT INTO game (whiteUsername, blackUsername, gameName, chessGame) VALUES (?, ?, ?, ?)";
         var chessGameJson = new Gson().toJson(chessGame);
-        var id = executeUpdate(statement, game.gameID(), game.whiteUsername(), game.blackUsername(), game.gameName(), chessGameJson);
+        var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), chessGameJson);
         return id;
     }
     public void updateGame(String playerColor, Game game, String username) throws DataAccessException {
@@ -75,7 +75,7 @@ public class SQLGameDAO implements GameDAO{
         var whiteUsername = rs.getString("whiteUsername");
         var blackUsername = rs.getString("blackUsername");
         var gameName = rs.getString("gameName");
-        var chessGameString = rs.getString("chessGame").toString();
+        var chessGameString = rs.getString("chessGame");
         var chessGame = new Gson().fromJson(chessGameString, ChessGame.class);
         Game response = new Game(id, whiteUsername, blackUsername, gameName, chessGame);
         return response;
