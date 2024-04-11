@@ -2,6 +2,7 @@ package ui;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.Auth;
 import model.Game;
 import model.User;
 import server.ServerFacade;
@@ -20,10 +21,12 @@ public class ChessClient {
     private final ServerFacade server;
     private Integer gameID = null;
     private final String serverUrl;
+    private String authToken = null;
     private final Map<Integer, Game> list = new HashMap<>();
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     public State state = State.LOGGED_OUT;
+    public boolean isJoined = false;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -58,7 +61,8 @@ public class ChessClient {
             playerName = params[0];
             var password = params[1];
             var login = new LoginRequest(playerName, password);
-            server.login(login);
+            Auth auth = server.login(login);
+            authToken = auth.authToken();
             return String.format("You logged in as %s.", playerName);
         }
         throw new ResponseException(400, "Expected: <username> <password>");
@@ -71,7 +75,8 @@ public class ChessClient {
             var password = params[1];
             var email = params[2];
             User user = new User(playerName, password, email);
-            server.register(user);
+            Auth auth = server.register(user);
+            authToken = auth.authToken();
             return String.format("You registered as %s.", playerName);
         }
         throw new ResponseException(400, "Expected: <username> <password> <email>");
@@ -102,7 +107,15 @@ public class ChessClient {
 
                 if (game != null) {
                     server.joinGame(game.gameID(), playerColor);
-                    ChessGame.run();
+                    isJoined = true;
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    if (playerColor.equals("WHITE")) {
+                        ws.joinPlayer(authToken, game.gameID(), chess.ChessGame.TeamColor.WHITE);
+                    }
+                    else {
+                        ws.joinPlayer(authToken, game.gameID(), chess.ChessGame.TeamColor.BLACK);
+                    }
+                    ChessGame.run(playerColor);
                     return String.format("\nYou are now playing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {
@@ -119,7 +132,7 @@ public class ChessClient {
                 var game = getGame(id);
                 if (game != null) {
                     server.joinGame(game.gameID(), null);
-                    ChessGame.run();
+                    ChessGame.run("WHITE");
                     return String.format("\nYou are now observing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {
@@ -188,16 +201,29 @@ public class ChessClient {
                     - quit - playing chess
                     - help - with possible commands
                     """;
+        } else {
+            if (isJoined) {
+                return """
+                    - redraw - redraws chess board
+                    - leave - current game
+                    - makeMove - input move
+                    - resign - restarts game
+                    - highlight - legal moves
+                    - help - with possible commands
+                    """;
+            }
+            else {
+                return """
+                        - create <NAME> - a game
+                        - list - games
+                        - join <ID> [WHITE|BLACK|<empty>] - a game
+                        - observe <ID> - a game
+                        - logout - when you are done
+                        - quit - playing chess
+                        - help - with possible commands
+                        """;
+            }
         }
-        return """
-                - create <NAME> - a game
-                - list - games
-                - join <ID> [WHITE|BLACK|<empty>] - a game
-                - observe <ID> - a game
-                - logout - when you are done
-                - quit - playing chess
-                - help - with possible commands
-                """;
     }
 
     private void assertSignedIn() throws ResponseException {

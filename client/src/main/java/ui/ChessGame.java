@@ -6,26 +6,25 @@ import static ui.EscapeSequences.*;
 public class ChessGame {
     private static final int BOARD_SIZE_IN_SQUARES = 8;
 
-    public static void run() {
+    public static void run(String playerColor) {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);
 
         out.print(SET_TEXT_BOLD);
+        if (playerColor.equals("WHITE")) {
+            drawHeader1(out);
 
-        drawHeader1(out);
+            drawChessBoard1(out);
 
-        drawChessBoard1(out);
+            drawHeader1(out);
+        } else {
+            drawHeader2(out);
 
-        drawHeader1(out);
+            drawChessBoard2(out);
 
-        out.println();
-
-        drawHeader2(out);
-
-        drawChessBoard2(out);
-
-        drawHeader2(out);
+            drawHeader2(out);
+        }
 
         out.print("\u001B[0m");
         out.print(SET_TEXT_COLOR_WHITE);

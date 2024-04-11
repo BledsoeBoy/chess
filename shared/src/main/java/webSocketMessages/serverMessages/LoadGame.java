@@ -3,10 +3,10 @@ package webSocketMessages.serverMessages;
 import chess.ChessGame;
 
 public class LoadGame extends ServerMessage {
-  private ChessGame game;
+  public String game;
 
-  public LoadGame(ChessGame game) {
+  public LoadGame() {
     super(ServerMessageType.LOAD_GAME);
-    this.game = game;
+    game = "Reload Game";
   }
 }

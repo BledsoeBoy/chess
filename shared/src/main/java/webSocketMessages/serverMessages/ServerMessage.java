@@ -8,7 +8,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class ServerMessage {
+public class ServerMessage { //server to client (notification)
     ServerMessageType serverMessageType;
 
     public enum ServerMessageType {
@@ -37,8 +37,5 @@ public class ServerMessage {
     @Override
     public int hashCode() {
         return Objects.hash(getServerMessageType());
-    }
-
-    public static class LoadGame {
     }
 }

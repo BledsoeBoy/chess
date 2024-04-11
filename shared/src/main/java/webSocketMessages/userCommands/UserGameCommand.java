@@ -1,5 +1,7 @@
 package webSocketMessages.userCommands;
 
+import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 
 import java.util.Objects;
@@ -10,7 +12,7 @@ import java.util.Objects;
  * Note: You can add to this class, but you should not alter the existing
  * methods.
  */
-public class UserGameCommand {
+public class UserGameCommand {  //client to server (Action)
 
     public UserGameCommand(String authToken) {
         this.authToken = authToken;
@@ -27,6 +29,9 @@ public class UserGameCommand {
     protected CommandType commandType;
 
     private final String authToken;
+    protected ChessGame.TeamColor playerColor = null;
+    protected Integer gameID = null;
+    protected ChessMove move = null;
 
     public String getAuthString() {
         return authToken;
@@ -38,6 +43,15 @@ public class UserGameCommand {
 
     public String toString() {
         return new Gson().toJson(this);
+    }
+    public ChessGame.TeamColor getPlayerColor() {
+        return playerColor;
+    }
+    public Integer getGameID() {
+        return gameID;
+    }
+    public ChessMove getMove() {
+        return move;
     }
     @Override
     public boolean equals(Object o) {

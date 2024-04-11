@@ -28,15 +28,13 @@ public class Handlers {
     private final AuthDAO authDao;
     private final GameDAO gameDao;
     private final Gson gson;
-    private final WebSocketHandler webSocketHandler;
-    public Handlers(AuthService authService, UserService userService, GameService gameService, AuthDAO authDao, GameDAO gameDao, Gson gson, WebSocketHandler webSocketHandler) {
+    public Handlers(AuthService authService, UserService userService, GameService gameService, AuthDAO authDao, GameDAO gameDao, Gson gson) {
         this.authService = authService;
         this.userService = userService;
         this.gameService = gameService;
         this.authDao = authDao;
         this.gameDao = gameDao;
         this.gson = gson;
-        this.webSocketHandler = webSocketHandler;
     }
 
     public Object clearApp(Request req, Response res) throws DataAccessException {

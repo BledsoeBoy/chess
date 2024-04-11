@@ -2,6 +2,7 @@ package ui;
 
 import ui.websocket.NotificationHandler;
 import webSocketMessages.serverMessages.Notification;
+import webSocketMessages.serverMessages.ServerMessage;
 
 import java.util.Scanner;
 
@@ -35,7 +36,7 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(Notification notification) {
-        System.out.println(SET_TEXT_COLOR_RED + notification.message());
+        System.out.println(SET_TEXT_COLOR_RED + notification.getMessage());
         printPrompt();
     }
 

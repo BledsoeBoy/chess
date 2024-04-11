@@ -22,9 +22,9 @@ public class Server {
             UserService userService = new UserService(authDAO, userDAO);
             GameService gameService = new GameService(authDAO, gameDAO);
             Gson gson = new Gson();
-            WebSocketHandler webSocketHandler = new WebSocketHandler();
+            WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
 
-            Handlers handlers = new Handlers(authService, userService, gameService, authDAO, gameDAO, gson, webSocketHandler);
+            Handlers handlers = new Handlers(authService, userService, gameService, authDAO, gameDAO, gson);
 
             Spark.webSocket("/connect", webSocketHandler);
 
