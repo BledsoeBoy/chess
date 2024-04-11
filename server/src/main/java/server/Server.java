@@ -13,20 +13,21 @@ public class Server {
         try {
             Spark.port(desiredPort);
 
-            Spark.staticFiles.location("web");
-
             AuthDAO authDAO = new SQLAuthDAO();
             GameDAO gameDAO = new SQLGameDAO();
             UserDAO userDAO = new SQLUserDAO();
+
+            Spark.staticFiles.location("web");
+            WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
+            Spark.webSocket("/connect", webSocketHandler);
+
             AuthService authService = new AuthService(authDAO, gameDAO, userDAO);
             UserService userService = new UserService(authDAO, userDAO);
             GameService gameService = new GameService(authDAO, gameDAO);
             Gson gson = new Gson();
-            WebSocketHandler webSocketHandler = new WebSocketHandler(authDAO, gameDAO);
 
             Handlers handlers = new Handlers(authService, userService, gameService, authDAO, gameDAO, gson);
 
-            Spark.webSocket("/connect", webSocketHandler);
 
             // No need to create an instance of Handlers since the methods are static
             // Register your endpoints and handle exceptions here.

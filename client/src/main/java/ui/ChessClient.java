@@ -20,13 +20,13 @@ public class ChessClient {
     private String playerName = null;
     private final ServerFacade server;
     private Integer gameID = null;
+    private String playerColor = null;
     private final String serverUrl;
     private String authToken = null;
     private final Map<Integer, Game> list = new HashMap<>();
     private final NotificationHandler notificationHandler;
     private WebSocketFacade ws;
     public State state = State.LOGGED_OUT;
-    public boolean isJoined = false;
 
     public ChessClient(String serverUrl, NotificationHandler notificationHandler) {
         server = new ServerFacade(serverUrl);
@@ -47,12 +47,47 @@ public class ChessClient {
                 case "logout" -> logout();
                 case "join" -> joinGame(params);
                 case "observe" -> observeGame(params);
+                case "redraw" -> redraw();
+                case "leave" -> leave();
+                case "makeMove" -> makeMove();
+                case "resign" -> resign();
+                case "highlight" -> highlightLegalMoves();
                 case "quit" -> "quit";
                 default -> help();
             };
         } catch (ResponseException ex) {
             return ex.getMessage();
         }
+    }
+
+    public String redraw() throws ResponseException {
+        assertSignedIn();
+        if (playerColor == null) {
+            ChessGame.run("WHITE");
+        }
+        ChessGame.run(playerColor);
+        return String.format("%s redrew the board", playerName);
+    }
+
+    public String leave() throws ResponseException {
+        assertSignedIn();
+        //remove player from database
+        return String.format("%s left the game", playerName);
+    }
+
+    public String resign() throws ResponseException {
+        assertSignedIn();
+        return String.format("%s resigned from game", playerName);
+    }
+
+    public String highlightLegalMoves() throws ResponseException {
+        assertSignedIn();
+        return String.format("%s, here are your legal moves", playerName);
+    }
+
+    public String makeMove() throws ResponseException {
+        assertSignedIn();
+        return String.format("%s made move", playerName);
     }
 
     public String login(String... params) throws ResponseException {
@@ -102,12 +137,12 @@ public class ChessClient {
             try {
                 var identifier = Integer.parseInt(params[0]);
                 var color = params[1];
-                String playerColor = color.toUpperCase();
+                playerColor = color.toUpperCase();
                 var game = getGame(identifier);
 
                 if (game != null) {
                     server.joinGame(game.gameID(), playerColor);
-                    isJoined = true;
+                    state = State.JOINED_GAME;
                     ws = new WebSocketFacade(serverUrl, notificationHandler);
                     if (playerColor.equals("WHITE")) {
                         ws.joinPlayer(authToken, game.gameID(), chess.ChessGame.TeamColor.WHITE);
@@ -132,6 +167,8 @@ public class ChessClient {
                 var game = getGame(id);
                 if (game != null) {
                     server.joinGame(game.gameID(), null);
+                    state = State.JOINED_GAME;
+
                     ChessGame.run("WHITE");
                     return String.format("\nYou are now observing on game: %s", game.gameName());
                 }
@@ -202,12 +239,12 @@ public class ChessClient {
                     - help - with possible commands
                     """;
         } else {
-            if (isJoined) {
+            if (state == State.JOINED_GAME) {
                 return """
-                    - redraw - redraws chess board
+                    - redraw - chess board
                     - leave - current game
                     - makeMove - input move
-                    - resign - restarts game
+                    - resign - you will forfeit game
                     - highlight - legal moves
                     - help - with possible commands
                     """;

@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
+import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
@@ -38,8 +39,9 @@ public class WebSocketHandler {
     public void onMessage(Session session, String message) throws IOException, DataAccessException, ResponseException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         Auth auth = authDAO.getAuth(action.getAuthString());
+        Game game = gameDAO.getGame(action.getGameID());
         switch (action.getCommandType()) {
-            case JOIN_PLAYER -> { joinPlayer(auth.username(), action.getPlayerColor(), action.getGameID(), session);
+            case JOIN_PLAYER -> { joinPlayer(//new gson auth.username(), action.getPlayerColor(), action.getGameID(), game, session);
             }
             case JOIN_OBSERVER -> { joinObserver(auth.username(), session);
             }
@@ -49,11 +51,17 @@ public class WebSocketHandler {
             }
             case RESIGN -> { resign(auth.username(), session);
             }
+            //default catch all error
         }
     }
 
-    private void joinPlayer(String playerName, ChessGame.TeamColor playerColor, Integer gameID, Session session) throws IOException, DataAccessException {
+    private void joinPlayer(String playerName, ChessGame.TeamColor playerColor, Integer gameID, Game game, Session session) throws IOException, DataAccessException {
         connections.add(playerName, session);
+
+        ChessGame chessGame = game.game();
+        var loadGame = new LoadGame(chessGame);
+        session.getRemote().sendString(new Gson().toJson(loadGame));
+
         var message = String.format("%s has joined the game on %s team", playerName, playerColor);
         var notification = new Notification(message);
         connections.broadcast(playerName, notification);
@@ -72,6 +80,8 @@ public class WebSocketHandler {
             var notification = new Notification(message);
             connections.broadcast("", notification);
         } catch (Exception ex) {
+            var Errormessage = new Error("Error");
+            //broadcast
             throw new ResponseException(500, ex.getMessage());
         }
     }
