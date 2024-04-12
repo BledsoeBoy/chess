@@ -29,9 +29,6 @@ public class UserGameCommand {  //client to server (Action)
     protected CommandType commandType;
 
     private final String authToken;
-    protected ChessGame.TeamColor playerColor = null;
-    protected Integer gameID = null;
-    protected ChessMove move = null;
 
     public String getAuthString() {
         return authToken;
@@ -43,15 +40,6 @@ public class UserGameCommand {  //client to server (Action)
 
     public String toString() {
         return new Gson().toJson(this);
-    }
-    public ChessGame.TeamColor getPlayerColor() {
-        return playerColor;
-    }
-    public Integer getGameID() {
-        return gameID;
-    }
-    public ChessMove getMove() {
-        return move;
     }
     @Override
     public boolean equals(Object o) {

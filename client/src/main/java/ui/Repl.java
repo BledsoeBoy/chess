@@ -1,10 +1,16 @@
 package ui;
 
+import com.google.gson.Gson;
 import ui.websocket.NotificationHandler;
+import webSocketMessages.serverMessages.Error;
+import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
+import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.UserGameCommand;
 
 import java.util.Scanner;
+import java.util.concurrent.TimeUnit;
 
 import static ui.EscapeSequences.*;
 
@@ -26,6 +32,7 @@ public class Repl implements NotificationHandler {
 
             try {
                 result = client.eval(line);
+                TimeUnit.SECONDS.sleep(1);
                 System.out.print(SET_TEXT_COLOR_BLUE + result);
             } catch (Throwable e) {
                 var msg = e.toString();
@@ -36,12 +43,33 @@ public class Repl implements NotificationHandler {
     }
 
     public void notify(String notification) {
-        //deserialize notification as serverMessage
-        //switch statement based on load, notification, error
-        //notification and error just print out
-        //load type takes game and prints it out
-        //System.out.println(SET_TEXT_COLOR_RED + notification);
-        printPrompt();
+        ServerMessage action = new Gson().fromJson(notification, ServerMessage.class);
+        switch (action.getServerMessageType()) {
+            case ERROR -> {
+                errorMessage(new Gson().fromJson(notification, Error.class));
+            }
+            case LOAD_GAME -> {
+                loadGame(new Gson().fromJson(notification, LoadGame.class));
+            }
+            case NOTIFICATION -> {
+                notificationMessage(new Gson().fromJson(notification, Notification.class));
+            }
+        }
+    }
+
+    private void errorMessage(Error errorClass) {
+        System.out.println("\n" + SET_TEXT_COLOR_RED + errorClass.errorMessage);
+    }
+
+    private void notificationMessage(Notification notification) {
+        System.out.println("\n" + SET_TEXT_COLOR_RED + notification.message);
+    }
+
+    private void loadGame(LoadGame loadGame) {
+        if (client.playerColor == null) {
+            ChessGame.run("WHITE");
+        }
+        ChessGame.run(client.playerColor);
     }
 
     private void printPrompt() {

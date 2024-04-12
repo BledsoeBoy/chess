@@ -29,12 +29,12 @@ public class SQLAuthDAO implements AuthDAO {
                     if (rs.next()) {
                         return readAuth(rs);
                     }
+                    throw new DataAccessException("Auth object not found for token: " + authToken);
                 }
             }
         } catch (Exception e) {
             throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
         }
-        return null;
     }
 
     public Auth createAuth(Auth auth) throws DataAccessException {

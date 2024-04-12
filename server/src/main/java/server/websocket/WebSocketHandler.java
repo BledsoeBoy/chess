@@ -16,8 +16,7 @@ import webSocketMessages.serverMessages.Error;
 import webSocketMessages.serverMessages.LoadGame;
 import webSocketMessages.serverMessages.Notification;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinPlayer;
-import webSocketMessages.userCommands.UserGameCommand;
+import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
 import java.util.Timer;
@@ -38,45 +37,64 @@ public class WebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session session, String message) throws IOException, DataAccessException, ResponseException {
         UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
-        Auth auth = authDAO.getAuth(action.getAuthString());
-        Game game = gameDAO.getGame(action.getGameID());
         switch (action.getCommandType()) {
-            case JOIN_PLAYER -> { joinPlayer(//new gson auth.username(), action.getPlayerColor(), action.getGameID(), game, session);
+            case JOIN_PLAYER -> { joinPlayer(new Gson().fromJson(message, JoinPlayer.class), session);
             }
-            case JOIN_OBSERVER -> { joinObserver(auth.username(), session);
+            case JOIN_OBSERVER -> { joinObserver(new Gson().fromJson(message, JoinObserver.class), session);
             }
-            case MAKE_MOVE -> { makeMove(auth.username(), session);
+            case MAKE_MOVE -> { makeMove(new Gson().fromJson(message, MakeMove.class), session);
             }
-            case LEAVE -> { leave(auth.username(), session);
+            case LEAVE -> { leave(new Gson().fromJson(message, Leave.class), session);
             }
-            case RESIGN -> { resign(auth.username(), session);
+            case RESIGN -> { resign(new Gson().fromJson(message, Resign.class), session);
             }
-            //default catch all error
+            default -> errorMessage(new Gson().fromJson(message, Error.class));
         }
     }
 
-    private void joinPlayer(String playerName, ChessGame.TeamColor playerColor, Integer gameID, Game game, Session session) throws IOException, DataAccessException {
-        connections.add(playerName, session);
-
-        ChessGame chessGame = game.game();
-        var loadGame = new LoadGame(chessGame);
-        session.getRemote().sendString(new Gson().toJson(loadGame));
-
-        var message = String.format("%s has joined the game on %s team", playerName, playerColor);
-        var notification = new Notification(message);
-        connections.broadcast(playerName, notification);
+    private void errorMessage(Error error) throws IOException {
+        error.errorMessage = "Error";
+        connections.broadcast("", error);
     }
 
-    private void joinObserver(String playerName, Session session) throws IOException {
-        connections.add(playerName, session);
-        var message = String.format("%s has joined the game as an observer", playerName);
-        var notification = new Notification(message);
-        connections.broadcast(playerName, notification);
-    }
-
-    public void makeMove(String playerName, Session session) throws ResponseException {
+    private void joinPlayer(JoinPlayer joinPlayer, Session session) throws IOException, DataAccessException, ResponseException {
         try {
-            var message = String.format("%s has joined the game as an observer", playerName);
+            String authToken=joinPlayer.getAuthString();
+            Auth auth=authDAO.getAuth(authToken);
+            connections.add(auth.username(), session);
+
+            Integer gameID=joinPlayer.gameID;
+            Game game=gameDAO.getGame(gameID);
+            ChessGame chessGame=game.game();
+            var loadGame=new LoadGame(chessGame);
+            session.getRemote().sendString(new Gson().toJson(loadGame));
+
+            var message=String.format("%s has joined the game on %s team", auth.username(), joinPlayer.playerColor);
+            var notification=new Notification(message);
+            connections.broadcast(auth.username(), notification);
+        } catch (Exception ex) {
+            var errorMessage = new Error("Error");
+            String authToken = joinPlayer.getAuthString();
+            Auth auth = authDAO.getAuth(authToken);
+            connections.broadcast(auth.username(), errorMessage);
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    private void joinObserver(JoinObserver joinObserver, Session session) throws IOException, DataAccessException {
+        Auth auth = authDAO.getAuth(joinObserver.getAuthString());
+        connections.add(auth.username(), session);
+
+        var message = String.format("%s has joined the game as an observer", auth.username());
+        var notification = new Notification(message);
+        connections.broadcast(auth.username(), notification);
+    }
+
+    public void makeMove(MakeMove makeMove, Session session) throws ResponseException {
+        try {
+            Auth auth = authDAO.getAuth(makeMove.getAuthString());
+            var message = String.format("%s has joined the game as an observer", auth.username());
+
             var notification = new Notification(message);
             connections.broadcast("", notification);
         } catch (Exception ex) {
@@ -86,9 +104,10 @@ public class WebSocketHandler {
         }
     }
 
-    public void leave(String playerName, Session session) throws ResponseException {
+    public void leave(Leave leave, Session session) throws ResponseException {
         try {
-            var message = String.format("%s has joined the game as an observer", playerName);
+            Auth auth = authDAO.getAuth(leave.getAuthString());
+            var message = String.format("%s has joined the game as an observer", auth.username());
             var notification = new Notification(message);
             connections.broadcast("", notification);
         } catch (Exception ex) {
@@ -96,9 +115,10 @@ public class WebSocketHandler {
         }
     }
 
-    public void resign(String playerName, Session session) throws ResponseException {
+    public void resign(Resign resign, Session session) throws ResponseException {
         try {
-            var message = String.format("%s has joined the game as an observer", playerName);
+            Auth auth = authDAO.getAuth(resign.getAuthString());
+            var message = String.format("%s has joined the game as an observer", auth.username());
             var notification = new Notification(message);
             connections.broadcast("", notification);
         } catch (Exception ex) {

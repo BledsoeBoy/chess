@@ -20,7 +20,7 @@ public class ChessClient {
     private String playerName = null;
     private final ServerFacade server;
     private Integer gameID = null;
-    private String playerColor = null;
+    public String playerColor = null;
     private final String serverUrl;
     private String authToken = null;
     private final Map<Integer, Game> list = new HashMap<>();
@@ -150,7 +150,7 @@ public class ChessClient {
                     else {
                         ws.joinPlayer(authToken, game.gameID(), chess.ChessGame.TeamColor.BLACK);
                     }
-                    ChessGame.run(playerColor);
+
                     return String.format("\nYou are now playing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {

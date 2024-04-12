@@ -52,14 +52,4 @@ public class WebSocketFacade extends Endpoint {
       throw new ResponseException(500, ex.getMessage());
     }
   }
-
-//  public void leavePetShop(String visitorName) throws ResponseException {
-//    try {
-//      var action = new Action(Action.Type.EXIT, visitorName);
-//      this.session.getBasicRemote().sendText(new Gson().toJson(action));
-//      this.session.close();
-//    } catch (IOException ex) {
-//      throw new ResponseException(500, ex.getMessage());
-//    }
-//  }
 }
