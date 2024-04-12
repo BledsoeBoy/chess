@@ -54,10 +54,10 @@ public class ServerFacade {
 
     public Game[] listGames() throws ResponseException {
         var path = "/game";
-        record listGameResponse(Game[] games) {
+        record ListGameResponse(Game[] games) {
         }
 
-        var response = this.makeRequest("GET", path, null, listGameResponse.class);
+        var response = this.makeRequest("GET", path, null, ListGameResponse.class);
         return response.games();
     }
 

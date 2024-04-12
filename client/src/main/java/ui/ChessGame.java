@@ -61,32 +61,19 @@ public class ChessGame {
                     out.print(SET_TEXT_COLOR_RED);
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_BLACK);
-                        if (boardCol == 2) {
-                            out.print(" N ");
-                        }
-                        else if (boardCol == 4) {
-                            out.print(" K ");
-                        }
-                        else if (boardCol == 6) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 8) {
-                            out.print(" R ");
+                        if (boardCol == 2) { out.print(" N ");
+                        } else if (boardCol == 4) { out.print(" K ");
+                        } else if (boardCol == 6) { out.print(" B ");
+                        } else if (boardCol == 8) { out.print(" R ");
                         }
                     }
                     else {
                         out.print(SET_BG_COLOR_WHITE);
                         if (boardCol == 1) {
                             out.print(" R ");
-                        }
-                        else if (boardCol == 3) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 5) {
-                            out.print(" Q ");
-                        }
-                        else if (boardCol == 7) {
-                            out.print(" N ");
+                        } else if (boardCol == 3) { out.print(" B ");
+                        } else if (boardCol == 5) { out.print(" Q ");
+                        } else if (boardCol == 7) { out.print(" N ");
                         }
                     }
                 }
@@ -95,8 +82,7 @@ public class ChessGame {
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_WHITE);
                         out.print(" P ");
-                    }
-                    else {
+                    } else {
                         out.print(SET_BG_COLOR_BLACK);
                         out.print(" P ");
                     }
@@ -105,32 +91,18 @@ public class ChessGame {
                     out.print(SET_TEXT_COLOR_BLUE);
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_WHITE);
-                        if (boardCol == 2) {
-                            out.print(" N ");
-                        }
-                        else if (boardCol == 4) {
-                            out.print(" K ");
-                        }
-                        else if (boardCol == 6) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 8) {
-                            out.print(" R ");
+                        if (boardCol == 2) { out.print(" N ");
+                        } else if (boardCol == 4) { out.print(" K ");
+                        } else if (boardCol == 6) { out.print(" B ");
+                        } else if (boardCol == 8) { out.print(" R ");
                         }
                     }
                     else {
                         out.print(SET_BG_COLOR_BLACK);
-                        if (boardCol == 1) {
-                            out.print(" R ");
-                        }
-                        else if (boardCol == 3) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 5) {
-                            out.print(" Q ");
-                        }
-                        else if (boardCol == 7) {
-                            out.print(" N ");
+                        if (boardCol == 1) { out.print(" R ");
+                        } else if (boardCol == 3) { out.print(" B ");
+                        } else if (boardCol == 5) { out.print(" Q ");
+                        } else if (boardCol == 7) { out.print(" N ");
                         }
                     }
                 }
@@ -139,8 +111,7 @@ public class ChessGame {
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_BLACK);
                         out.print(" P ");
-                    }
-                    else {
+                    } else {
                         out.print(SET_BG_COLOR_WHITE);
                         out.print(" P ");
                     }
@@ -186,30 +157,17 @@ public class ChessGame {
                         out.print(SET_BG_COLOR_BLACK);
                         if (boardCol == 2) {
                             out.print(" N ");
-                        }
-                        else if (boardCol == 4) {
-                            out.print(" K ");
-                        }
-                        else if (boardCol == 6) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 8) {
-                            out.print(" R ");
+                        } else if (boardCol == 4) { out.print(" K ");
+                        } else if (boardCol == 6) { out.print(" B ");
+                        } else if (boardCol == 8) { out.print(" R ");
                         }
                     }
                     else {
                         out.print(SET_BG_COLOR_WHITE);
-                        if (boardCol == 1) {
-                            out.print(" R ");
-                        }
-                        else if (boardCol == 3) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 5) {
-                            out.print(" Q ");
-                        }
-                        else if (boardCol == 7) {
-                            out.print(" N ");
+                        if (boardCol == 1) { out.print(" R ");
+                        } else if (boardCol == 3) { out.print(" B ");
+                        } else if (boardCol == 5) { out.print(" Q ");
+                        } else if (boardCol == 7) { out.print(" N ");
                         }
                     }
                 }
@@ -218,8 +176,7 @@ public class ChessGame {
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_WHITE);
                         out.print(" P ");
-                    }
-                    else {
+                    } else {
                         out.print(SET_BG_COLOR_BLACK);
                         out.print(" P ");
                     }
@@ -228,32 +185,17 @@ public class ChessGame {
                     out.print(SET_TEXT_COLOR_BLUE);
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_WHITE);
-                        if (boardCol == 2) {
-                            out.print(" N ");
+                        if (boardCol == 2) { out.print(" N ");
+                        } else if (boardCol == 4) { out.print(" K ");
+                        } else if (boardCol == 6) { out.print(" B ");
+                        } else if (boardCol == 8) { out.print(" R ");
                         }
-                        else if (boardCol == 4) {
-                            out.print(" K ");
-                        }
-                        else if (boardCol == 6) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 8) {
-                            out.print(" R ");
-                        }
-                    }
-                    else {
+                    } else {
                         out.print(SET_BG_COLOR_BLACK);
-                        if (boardCol == 1) {
-                            out.print(" R ");
-                        }
-                        else if (boardCol == 3) {
-                            out.print(" B ");
-                        }
-                        else if (boardCol == 5) {
-                            out.print(" Q ");
-                        }
-                        else if (boardCol == 7) {
-                            out.print(" N ");
+                        if (boardCol == 1) { out.print(" R ");
+                        } else if (boardCol == 3) { out.print(" B ");
+                        } else if (boardCol == 5) { out.print(" Q ");
+                        } else if (boardCol == 7) { out.print(" N ");
                         }
                     }
                 }
@@ -262,8 +204,7 @@ public class ChessGame {
                     if (boardCol % 2 == 0) {
                         out.print(SET_BG_COLOR_BLACK);
                         out.print(" P ");
-                    }
-                    else {
+                    } else {
                         out.print(SET_BG_COLOR_WHITE);
                         out.print(" P ");
                     }

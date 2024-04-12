@@ -98,7 +98,7 @@ public class WebSocketHandler {
             var notification = new Notification(message);
             connections.broadcast("", notification);
         } catch (Exception ex) {
-            var Errormessage = new Error("Error");
+            var errorMessage = new Error("Error");
             //broadcast
             throw new ResponseException(500, ex.getMessage());
         }
