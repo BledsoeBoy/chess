@@ -21,9 +21,9 @@ import java.util.*;
 public class ChessClient {
     private String playerName = null;
     private final ServerFacade server;
-    private Integer gameID = null;
     public String playerColor = null;
     public Game game;
+    private Integer gameID = null;
     private final String serverUrl;
     private String authToken = null;
     private final Map<Integer, Game> list = new HashMap<>();
