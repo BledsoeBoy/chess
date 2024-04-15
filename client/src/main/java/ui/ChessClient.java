@@ -87,6 +87,8 @@ public class ChessClient {
 
     public String makeMove() throws ResponseException {
         assertSignedIn();
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.makeMove(authToken, game.gameID(), chess.ChessGame.TeamColor.WHITE);
         return String.format("%s made move", playerName);
     }
 
@@ -168,8 +170,9 @@ public class ChessClient {
                 if (game != null) {
                     server.joinGame(game.gameID(), null);
                     state = State.JOINED_GAME;
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    ws.joinObserver(authToken, game.gameID());
 
-                    ChessGame.run("WHITE");
                     return String.format("\nYou are now observing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {

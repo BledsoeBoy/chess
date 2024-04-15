@@ -1,12 +1,12 @@
 package ui.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import webSocketMessages.serverMessages.ServerMessage;
-import webSocketMessages.userCommands.JoinPlayer;
+import webSocketMessages.userCommands.*;
 import webSocketMessages.serverMessages.Notification;
-import webSocketMessages.userCommands.UserGameCommand;
 
 import javax.websocket.*;
 import java.io.IOException;
@@ -47,6 +47,42 @@ public class WebSocketFacade extends Endpoint {
   public void joinPlayer(String authToken, Integer gameID, ChessGame.TeamColor playerColor) throws ResponseException {
     try {
       var action = new JoinPlayer(authToken, gameID, playerColor);
+      this.session.getBasicRemote().sendText(new Gson().toJson(action));
+    } catch (IOException ex) {
+      throw new ResponseException(500, ex.getMessage());
+    }
+  }
+
+  public void joinObserver(String authToken, Integer gameID) throws ResponseException {
+    try {
+      var action = new JoinObserver(authToken, gameID);
+      this.session.getBasicRemote().sendText(new Gson().toJson(action));
+    } catch (IOException ex) {
+      throw new ResponseException(500, ex.getMessage());
+    }
+  }
+
+  public void makeMove(String authToken, Integer gameID, ChessMove move) throws ResponseException {
+    try {
+      var action = new MakeMove(authToken, gameID, move);
+      this.session.getBasicRemote().sendText(new Gson().toJson(action));
+    } catch (IOException ex) {
+      throw new ResponseException(500, ex.getMessage());
+    }
+  }
+
+  public void leave(String authToken, Integer gameID) throws ResponseException {
+    try {
+      var action = new Leave(authToken, gameID);
+      this.session.getBasicRemote().sendText(new Gson().toJson(action));
+    } catch (IOException ex) {
+      throw new ResponseException(500, ex.getMessage());
+    }
+  }
+
+  public void resign(String authToken, Integer gameID) throws ResponseException {
+    try {
+      var action = new Resign(authToken, gameID);
       this.session.getBasicRemote().sendText(new Gson().toJson(action));
     } catch (IOException ex) {
       throw new ResponseException(500, ex.getMessage());

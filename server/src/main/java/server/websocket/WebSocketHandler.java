@@ -2,9 +2,7 @@ package server.websocket;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import dataAccess.AuthDAO;
-import dataAccess.DataAccessException;
-import dataAccess.GameDAO;
+import dataAccess.*;
 import exception.ResponseException;
 import model.Auth;
 import model.Game;
@@ -19,6 +17,7 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.Timer;
 
 
@@ -48,20 +47,20 @@ public class WebSocketHandler {
             }
             case RESIGN -> { resign(new Gson().fromJson(message, Resign.class), session);
             }
-            default -> errorMessage(new Gson().fromJson(message, Error.class));
+            default -> errorMessage(new Gson().fromJson(message, Error.class), session);
         }
     }
 
-    private void errorMessage(Error error) throws IOException {
+    private void errorMessage(Error error, Session session) throws IOException {
         error.errorMessage = "Error";
-        connections.broadcast("", error);
+        session.getRemote().sendString(new Gson().toJson(error));
     }
 
     private void joinPlayer(JoinPlayer joinPlayer, Session session) throws IOException, DataAccessException, ResponseException {
         try {
-            String authToken=joinPlayer.getAuthString();
-            Auth auth=authDAO.getAuth(authToken);
-            connections.add(auth.username(), session);
+            String authToken = joinPlayer.getAuthString();
+            Auth auth = authDAO.getAuth(authToken);
+            connections.add(auth.username(), joinPlayer.gameID, session);
 
             Integer gameID=joinPlayer.gameID;
             Game game=gameDAO.getGame(gameID);
@@ -71,57 +70,101 @@ public class WebSocketHandler {
 
             var message=String.format("%s has joined the game on %s team", auth.username(), joinPlayer.playerColor);
             var notification=new Notification(message);
-            connections.broadcast(auth.username(), notification);
+            connections.broadcast(auth.username(), joinPlayer.gameID, notification);
         } catch (Exception ex) {
             var errorMessage = new Error("Error");
-            String authToken = joinPlayer.getAuthString();
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    private void joinObserver(JoinObserver joinObserver, Session session) throws IOException, DataAccessException, ResponseException {
+        try {
+            String authToken = joinObserver.getAuthString();
             Auth auth = authDAO.getAuth(authToken);
-            connections.broadcast(auth.username(), errorMessage);
-            throw new ResponseException(500, ex.getMessage());
-        }
-    }
+            connections.add(auth.username(), joinObserver.gameID, session);
 
-    private void joinObserver(JoinObserver joinObserver, Session session) throws IOException, DataAccessException {
-        Auth auth = authDAO.getAuth(joinObserver.getAuthString());
-        connections.add(auth.username(), session);
+            Integer gameID = joinObserver.gameID;
+            Game game = gameDAO.getGame(gameID);
+            ChessGame chessGame = game.game();
+            var loadGame = new LoadGame(chessGame);
+            session.getRemote().sendString(new Gson().toJson(loadGame));
 
-        var message = String.format("%s has joined the game as an observer", auth.username());
-        var notification = new Notification(message);
-        connections.broadcast(auth.username(), notification);
-    }
-
-    public void makeMove(MakeMove makeMove, Session session) throws ResponseException {
-        try {
-            Auth auth = authDAO.getAuth(makeMove.getAuthString());
-            var message = String.format("%s has joined the game as an observer", auth.username());
-
-            var notification = new Notification(message);
-            connections.broadcast("", notification);
+            var message=String.format("%s has joined the game as an observer", auth.username());
+            var notification=new Notification(message);
+            connections.broadcast(auth.username(), joinObserver.gameID, notification);
         } catch (Exception ex) {
             var errorMessage = new Error("Error");
-            //broadcast
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
             throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    public void leave(Leave leave, Session session) throws ResponseException {
+    public void makeMove(MakeMove makeMove, Session session) throws ResponseException, IOException {
         try {
-            Auth auth = authDAO.getAuth(leave.getAuthString());
-            var message = String.format("%s has joined the game as an observer", auth.username());
-            var notification = new Notification(message);
-            connections.broadcast("", notification);
+            String authToken = makeMove.getAuthString();
+            Auth auth = authDAO.getAuth(authToken);
+
+            Integer gameID = makeMove.gameID;
+            Game game = gameDAO.getGame(gameID);
+            ChessGame chessGame = game.game();
+            var loadGame = new LoadGame(chessGame);
+            session.getRemote().sendString(new Gson().toJson(loadGame));
+
+            var message=String.format("%s has joined the game as an observer", auth.username());
+            var notification=new Notification(message);
+            connections.broadcast(auth.username(), makeMove.gameID, notification);
         } catch (Exception ex) {
+            var errorMessage = new Error("Error");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
             throw new ResponseException(500, ex.getMessage());
         }
     }
 
-    public void resign(Resign resign, Session session) throws ResponseException {
+    public void leave(Leave leave, Session session) throws ResponseException, IOException {
         try {
-            Auth auth = authDAO.getAuth(resign.getAuthString());
-            var message = String.format("%s has joined the game as an observer", auth.username());
-            var notification = new Notification(message);
-            connections.broadcast("", notification);
+            String authToken = leave.getAuthString();
+            Auth auth = authDAO.getAuth(authToken);
+
+            Integer gameID = leave.gameID;
+            Game game = gameDAO.getGame(gameID);
+            if (Objects.equals(auth.username(), game.whiteUsername())) {
+                gameDAO.updateGame("WHITE", game, null);
+            } else if (Objects.equals(auth.username(), game.blackUsername())) {
+                gameDAO.updateGame("BLACK", game, null);
+            }
+
+            var message=String.format("%s has left the game", auth.username());
+            var notification=new Notification(message);
+            connections.broadcast(auth.username(), leave.gameID, notification);
+            connections.remove(auth.username());
         } catch (Exception ex) {
+            var errorMessage = new Error("Error");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            throw new ResponseException(500, ex.getMessage());
+        }
+    }
+
+    public void resign(Resign resign, Session session) throws ResponseException, IOException {
+        try {
+            String authToken = resign.getAuthString();
+            Auth auth = authDAO.getAuth(authToken);
+
+            Integer gameID = resign.gameID;
+            Game game = gameDAO.getGame(gameID);
+            if (Objects.equals(auth.username(), game.whiteUsername())) {
+                gameDAO.updateGame("WHITE", game, null);
+            } else if (Objects.equals(auth.username(), game.blackUsername())) {
+                gameDAO.updateGame("BLACK", game, null);
+            }
+
+            var message=String.format("%s has left the game", auth.username());
+            var notification=new Notification(message);
+            connections.broadcast(auth.username(), resign.gameID, notification);
+            connections.remove(auth.username());
+        } catch (Exception ex) {
+            var errorMessage = new Error("Error");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
             throw new ResponseException(500, ex.getMessage());
         }
     }
