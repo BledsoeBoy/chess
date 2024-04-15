@@ -1,5 +1,7 @@
 package ui;
 
+import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import exception.ResponseException;
 import model.Auth;
@@ -21,6 +23,7 @@ public class ChessClient {
     private final ServerFacade server;
     private Integer gameID = null;
     public String playerColor = null;
+    public Game game;
     private final String serverUrl;
     private String authToken = null;
     private final Map<Integer, Game> list = new HashMap<>();
@@ -71,12 +74,17 @@ public class ChessClient {
 
     public String leave() throws ResponseException {
         assertSignedIn();
-        //remove player from database
+        state = State.LOGGED_IN;
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.leave(authToken, game.gameID());
         return String.format("%s left the game", playerName);
     }
 
     public String resign() throws ResponseException {
         assertSignedIn();
+        state = State.JOINED_GAME;
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.resign(authToken, game.gameID());
         return String.format("%s resigned from game", playerName);
     }
 
@@ -87,6 +95,8 @@ public class ChessClient {
 
     public String makeMove() throws ResponseException {
         assertSignedIn();
+        ws = new WebSocketFacade(serverUrl, notificationHandler);
+        ws.makeMove(authToken, game.gameID(), new ChessMove(new ChessPosition(3, 5), new ChessPosition(3, 6), null));
         return String.format("%s made move", playerName);
     }
 
@@ -138,7 +148,7 @@ public class ChessClient {
                 var identifier = Integer.parseInt(params[0]);
                 var color = params[1];
                 playerColor = color.toUpperCase();
-                var game = getGame(identifier);
+                game = getGame(identifier);
 
                 if (game != null) {
                     server.joinGame(game.gameID(), playerColor);
@@ -168,8 +178,9 @@ public class ChessClient {
                 if (game != null) {
                     server.joinGame(game.gameID(), null);
                     state = State.JOINED_GAME;
+                    ws = new WebSocketFacade(serverUrl, notificationHandler);
+                    ws.joinObserver(authToken, game.gameID());
 
-                    ChessGame.run("WHITE");
                     return String.format("\nYou are now observing on game: %s", game.gameName());
                 }
             } catch (NumberFormatException ignored) {

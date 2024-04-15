@@ -60,17 +60,26 @@ public class WebSocketHandler {
         try {
             String authToken = joinPlayer.getAuthString();
             Auth auth = authDAO.getAuth(authToken);
-            connections.add(auth.username(), joinPlayer.gameID, session);
 
             Integer gameID=joinPlayer.gameID;
             Game game=gameDAO.getGame(gameID);
-            ChessGame chessGame=game.game();
-            var loadGame=new LoadGame(chessGame);
-            session.getRemote().sendString(new Gson().toJson(loadGame));
+            if ((joinPlayer.playerColor == ChessGame.TeamColor.WHITE) && !Objects.equals(auth.username(), game.whiteUsername())) {
+                var errorMessage = new Error("Error");
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+            } else if ((joinPlayer.playerColor == ChessGame.TeamColor.BLACK) && !Objects.equals(auth.username(), game.blackUsername())) {
+                var errorMessage = new Error("Error");
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+            }
+            else {
+                ChessGame chessGame=game.game();
+                var loadGame=new LoadGame(chessGame);
+                session.getRemote().sendString(new Gson().toJson(loadGame));
+                connections.add(auth.username(), joinPlayer.gameID, session);
 
-            var message=String.format("%s has joined the game on %s team", auth.username(), joinPlayer.playerColor);
-            var notification=new Notification(message);
-            connections.broadcast(auth.username(), joinPlayer.gameID, notification);
+                var message=String.format("%s has joined the game on %s team", auth.username(), joinPlayer.playerColor);
+                var notification=new Notification(message);
+                connections.broadcast(auth.username(), joinPlayer.gameID, notification);
+            }
         } catch (Exception ex) {
             var errorMessage = new Error("Error");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
