@@ -17,6 +17,8 @@ import webSocketMessages.serverMessages.ServerMessage;
 import webSocketMessages.userCommands.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Timer;
 
@@ -25,6 +27,7 @@ import java.util.Timer;
 public class WebSocketHandler {
     private final AuthDAO authDAO;
     private final GameDAO gameDAO;
+    Map<String, Integer> repeats = new HashMap<>();
 
     private final ConnectionManager connections = new ConnectionManager();
 
@@ -118,11 +121,13 @@ public class WebSocketHandler {
             Game game = gameDAO.getGame(gameID);
             ChessGame chessGame = game.game();
             var loadGame = new LoadGame(chessGame);
-            session.getRemote().sendString(new Gson().toJson(loadGame));
+            //session.getRemote().sendString(new Gson().toJson(loadGame));
 
             var message=String.format("%s has joined the game as an observer", auth.username());
             var notification=new Notification(message);
-            connections.broadcast(auth.username(), makeMove.gameID, notification);
+            var errorMessage = new Error("Error");
+            session.getRemote().sendString(new Gson().toJson(errorMessage));
+            //connections.broadcast(auth.username(), makeMove.gameID, notification);
         } catch (Exception ex) {
             var errorMessage = new Error("Error");
             session.getRemote().sendString(new Gson().toJson(errorMessage));
@@ -159,6 +164,14 @@ public class WebSocketHandler {
             String authToken = resign.getAuthString();
             Auth auth = authDAO.getAuth(authToken);
 
+            if (repeats.get(auth.username()) == null) {
+                repeats.put(auth.username(), 1);
+            } else {
+                var errorMessage = new Error("Error");
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+                return;
+            }
+
             Integer gameID = resign.gameID;
             Game game = gameDAO.getGame(gameID);
             if (Objects.equals(auth.username(), game.whiteUsername())) {
@@ -167,10 +180,16 @@ public class WebSocketHandler {
                 gameDAO.updateGame("BLACK", game, null);
             }
 
-            var message=String.format("%s has left the game", auth.username());
-            var notification=new Notification(message);
-            connections.broadcast(auth.username(), resign.gameID, notification);
-            connections.remove(auth.username());
+            if (!Objects.equals(game.whiteUsername(), auth.username()) && !Objects.equals(game.blackUsername(), auth.username())) {
+                var errorMessage = new Error("Error");
+                session.getRemote().sendString(new Gson().toJson(errorMessage));
+            } else {
+                var message=String.format("%s has resigned", auth.username());
+                var notification=new Notification(message);
+                session.getRemote().sendString(new Gson().toJson(notification));
+                connections.broadcast(auth.username(), resign.gameID, notification);
+                connections.remove(auth.username());
+            }
         } catch (Exception ex) {
             var errorMessage = new Error("Error");
             session.getRemote().sendString(new Gson().toJson(errorMessage));

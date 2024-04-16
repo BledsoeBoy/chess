@@ -82,7 +82,6 @@ public class ChessClient {
 
     public String resign() throws ResponseException {
         assertSignedIn();
-        state = State.JOINED_GAME;
         ws = new WebSocketFacade(serverUrl, notificationHandler);
         ws.resign(authToken, game.gameID());
         return String.format("%s resigned from game", playerName);
